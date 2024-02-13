@@ -1,0 +1,9 @@
+{
+	"geode": "2.0.0-beta.12",
+	"gd": "2.204",
+	"version": "v1.0.0",
+	"id": "bitz_&_ghostpower.darkmode_v4",
+	"name": "DarkMode V4",
+	"developer": "BitZ & GhostPower",
+	"description": "Change the entire game interface to darker tones, in addition to being able to choose between the colors of some details."
+}
