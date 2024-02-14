@@ -290,17 +290,22 @@ class $modify(CCLayerColor)
 
 class $modify(MenuGameLayer)
 {
+#ifdef GEODE_IS_WINDOWS
+
+
 	TodoReturn update(float a1)
 	{
 		MenuGameLayer::update(a1);
-		
-		
+
+
 		this->m_backgroundSprite->setColor({ 50,50,50 });
-	
+
 		this->m_groundLayer->updateGround01Color({ 50,50,50 });
 		this->m_groundLayer->updateGround02Color({ 50,50,50 });
 		/*std::cout << "Omg funciona" << std::endl;*/
 	}
+#endif
+	
 };
 
 class $modify(LevelInfoLayer)
