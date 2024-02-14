@@ -21,6 +21,11 @@
 #include <Geode/modify/ProfilePage.hpp>
 #include <Geode/modify/LoadingLayer.hpp>
 #include <Geode/modify/GJLevelScoreCell.hpp>
+#include <Geode/modify/LevelListCell.hpp>
+#include <Geode/modify/GJScoreCell.hpp>
+#include <Geode/modify/StatsCell.hpp>
+#include <Geode/modify/StatsLayer.hpp>
+#include <Geode/modify/URLCell.hpp>
 using namespace geode::prelude;
 
 template<typename Base, typename T>
@@ -30,6 +35,107 @@ inline bool instanceof(const T* ptr) {
 
 //hola
 
+
+class $modify(URLCell)
+{
+#ifdef GEODE_IS_ANDROID
+
+
+	TodoReturn updateBGColor(int a1)
+	{
+		URLCell::updateBGColor(a1);
+		if (a1 % 2 == 1) // Si a1 es impar
+		{
+			this->m_backgroundLayer->setColor({ 80, 80, 80 });
+
+		}
+		else // Si a1 es par
+		{
+			this->m_backgroundLayer->setColor({ 48, 48, 48 });
+		}
+	}
+#endif
+
+};
+class $modify(StatsLayer)
+{
+	void customSetup()
+	{
+		
+		StatsLayer::customSetup();
+		this->setTag(80);
+		
+		
+		}
+
+
+
+};
+class $modify(StatsCell)
+{
+
+
+
+	TodoReturn updateBGColor(int a1)
+	{
+		StatsCell::updateBGColor(a1);
+		if (a1 % 2 == 1) // Si a1 es impar
+		{
+			this->m_backgroundLayer->setColor({ 80, 80, 80 });
+
+		}
+
+		else // Si a1 es par
+		{
+			this->m_backgroundLayer->setColor({ 48, 48, 48 });
+		}
+
+		
+	}
+
+};
+class $modify(GJScoreCell)
+{
+#ifdef GEODE_IS_ANDROID
+
+
+	TodoReturn updateBGColor(int a1)
+	{
+		GJScoreCell::updateBGColor(a1);
+		if (a1 % 2 == 1) // Si a1 es impar
+		{
+			this->m_backgroundLayer->setColor({ 80, 80, 80 });
+
+		}
+		else // Si a1 es par
+		{
+			this->m_backgroundLayer->setColor({ 48, 48, 48 });
+		}
+	}
+#endif
+
+};
+class $modify(LevelListCell)
+{
+#ifdef GEODE_IS_ANDROID
+
+
+	TodoReturn updateBGColor(int a1)
+	{
+		LevelListCell::updateBGColor(a1);
+		if (a1 % 2 == 1) // Si a1 es impar
+		{
+			this->m_backgroundLayer->setColor({ 80, 80, 80 });
+
+		}
+		else // Si a1 es par
+		{
+			this->m_backgroundLayer->setColor({ 48, 48, 48 });
+		}
+	}
+#endif
+
+};
 class $modify(GJLevelScoreCell)
 {
 #ifdef GEODE_IS_ANDROID
