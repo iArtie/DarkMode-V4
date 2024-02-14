@@ -20,6 +20,7 @@
 #include <Geode/modify/GJLocalLevelScoreCell.hpp>
 #include <Geode/modify/ProfilePage.hpp>
 #include <Geode/modify/LoadingLayer.hpp>
+#include <Geode/modify/GJLevelScoreCell.hpp>
 using namespace geode::prelude;
 
 template<typename Base, typename T>
@@ -29,7 +30,27 @@ inline bool instanceof(const T* ptr) {
 
 //hola
 
+class $modify(GJLevelScoreCell)
+{
+#ifdef GEODE_IS_ANDROID
 
+
+	TodoReturn updateBGColor(int a1)
+	{
+		GJLevelScoreCell::updateBGColor(a1);
+		if (a1 % 2 == 1) // Si a1 es impar
+		{
+			this->m_backgroundLayer->setColor({ 80, 80, 80 });
+
+		}
+		else // Si a1 es par
+		{
+			this->m_backgroundLayer->setColor({ 48, 48, 48 });
+		}
+	}
+#endif
+	
+};
 class $modify(ProfilePage)
 {
 
@@ -172,20 +193,6 @@ class $modify(InfoLayer)
 		BG->setOpacity(40);*/
 	}
 
-	void show()
-	{
-	  InfoLayer::show();
-	  auto Layer = (CCLayer*)this->getChildren()->objectAtIndex(0);
-	  auto BG = (CCScale9Sprite*)Layer->getChildByID("desc-background");
-
-	  //auto RemplaceBG = CCScale9Sprite::create("square02b_001.png");
-	  //RemplaceBG->setColor({ 0,0,0 });
-	  //RemplaceBG->setPosition(BG->getPosition());
-	  //RemplaceBG->setScale(BG->getScale());
-	  //Layer->addChild(RemplaceBG,1);
-	  BG->setColor({ 0,0,0 });
-	  BG->setOpacity(40);
-	}
 };
 
 class $modify(LevelBrowserLayer)
