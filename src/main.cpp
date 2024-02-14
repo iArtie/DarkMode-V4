@@ -290,22 +290,73 @@ class $modify(CCLayerColor)
 
 class $modify(MenuGameLayer)
 {
-#ifdef GEODE_IS_WINDOWS
+
 
 
 	TodoReturn update(float a1)
 	{
 		MenuGameLayer::update(a1);
 
+		CCObject* pObj = nullptr;
 
-		this->m_backgroundSprite->setColor({ 50,50,50 });
+
+		CCARRAY_FOREACH(((CCLayer*)(this))->getChildren(), pObj) {
+			CCSprite* currentSprite = (CCSprite*)pObj;
+
+			if (currentSprite->getContentSize().height == 512)
+			{
+				currentSprite->setColor({ 50,50,50 });
+			}
+
+			if (instanceof<GJGroundLayer>(pObj)) {
+
+				GJGroundLayer* ground = dynamic_cast<GJGroundLayer*>(pObj);
+				ground->updateGround01Color({ 50,50,50 });
+				ground->updateGround02Color({ 50,50,50 });
+			}
+		}
+			
+
+
+			/*CCARRAY_FOREACH(((CCLayer*)(this))->getChildren(), pObj2) {
+				if (instanceof<GJGroundLayer>(pObj)) {
+
+					GJGroundLayer* ground = dynamic_cast<GJGroundLayer*>(pObj2);
+					ground->updateGround01Color({ 50,50,50 });
+					ground->updateGround02Color({ 50,50,50 });
+				}
+			}*/
+		/*this->m_backgroundSprite->setColor({ 50,50,50 });
 
 		this->m_groundLayer->updateGround01Color({ 50,50,50 });
-		this->m_groundLayer->updateGround02Color({ 50,50,50 });
+		this->m_groundLayer->updateGround02Color({ 50,50,50 });*/
 		/*std::cout << "Omg funciona" << std::endl;*/
 	}
-#endif
-	
+
+	bool init()
+	{
+		auto fondolol = CCScale9Sprite::create("square02b_001.png");
+		fondolol->setColor({ 50,50,50 });
+		CCObject* pObj = nullptr;
+		
+
+		CCARRAY_FOREACH(((CCSprite*)(this))->getChildren(), pObj) {
+			CCSprite* currentSprite = (CCSprite*)pObj;
+
+			if (currentSprite->getContentSize().height == 512)
+			{
+				fondolol->setPosition(currentSprite->getRotationX(), currentSprite->getRotationY());
+			}
+		
+				
+		
+		}
+		/*auto BG = (CCSprite*)this->getChildren()->objectAtIndex(0);
+		fondolol->setPosition(BG->getRotationX(), BG->getRotationY());*/
+		this->addChild(fondolol, 1);
+
+		return MenuGameLayer::init();
+	}
 };
 
 class $modify(LevelInfoLayer)
