@@ -386,7 +386,8 @@ class $modify(CCLayerColor)
 
 
 						GJCommentListLayer* list = dynamic_cast<GJCommentListLayer*>(pObj2);
-						if (list->getContentSize().width == 340 && list->getContentSize().height == 45 )
+						if (list->getContentSize().width == 340 && list->getContentSize().height == 45 ||
+							list->getContentSize().width == 340 && list->getContentSize().height == 100)
 						{
 							list->setColor({ 44,44,44 });
 						}
