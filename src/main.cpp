@@ -319,15 +319,104 @@ class $modify(CCLayerColor)
 	{
 		auto GeodeGenericCell = this->getParent();
 		
-	
+		
 		
 		/*auto parent4 = parent3->getParent();*/
 
 		/*CCObject* pObj = nullptr;*/
 		auto currentScene = CCDirector::sharedDirector()->getRunningScene();
-		/*currentScene->setVisible(false);*/
-
+		auto Layer = (CCLayer*)currentScene->getChildren()->objectAtIndex(0);
 		
+		CCObject* pObj = nullptr;
+
+
+		CCARRAY_FOREACH(((CCSprite*)(Layer))->getChildren(), pObj) {
+
+			
+			if (instanceof<GJListLayer>(pObj)) {
+
+				GJListLayer* list = dynamic_cast<GJListLayer*>(pObj);
+				list->setColor({ 31,31,31 });
+			}
+
+
+			if (instanceof<StatsLayer>(pObj)) {
+
+				StatsLayer* stats = dynamic_cast<StatsLayer*>(pObj);
+				auto layersos = (CCLayer*)stats->getChildren()->objectAtIndex(0);
+				
+				CCObject* pObj2 = nullptr;
+
+
+				CCARRAY_FOREACH(((CCSprite*)(layersos))->getChildren(), pObj2) {
+
+					/*CCSprite* currentSprite = (CCSprite*)pObj;*/
+
+					if (instanceof<GJListLayer>(pObj2)) {
+
+						GJListLayer* list = dynamic_cast<GJListLayer*>(pObj2);
+						list->setColor({ 31,31,31 });
+					}
+					
+
+				}
+			}
+
+		}
+
+		CCObject* pObj3 = nullptr;
+		CCARRAY_FOREACH(((CCSprite*)(currentScene))->getChildren(), pObj3) {
+
+			CCNode* currentNode = (CCNode*)pObj3;
+
+			
+
+			if (currentNode->getZOrder() == 105)
+			{
+				CCLayer* roompopup = dynamic_cast<CCLayer*>(pObj3);
+				auto layersos = (CCLayer*)roompopup->getChildren()->objectAtIndex(0);
+				CCObject* pObj2 = nullptr;
+
+
+				CCARRAY_FOREACH(((CCSprite*)(layersos))->getChildren(), pObj2) {
+
+					/*CCSprite* currentSprite = (CCSprite*)pObj;*/
+
+					if (instanceof<GJCommentListLayer>(pObj2)) {
+
+
+						GJCommentListLayer* list = dynamic_cast<GJCommentListLayer*>(pObj2);
+						if (list->getContentSize().width == 340 && list->getContentSize().height == 45 )
+						{
+							list->setColor({ 44,44,44 });
+						}
+						else
+						{
+							list->setColor({ 31,31,31 });
+						}
+						
+					}
+
+
+				}
+			}
+			
+			if (instanceof<GJListLayer>(pObj3)) {
+
+				GJListLayer* list = dynamic_cast<GJListLayer*>(pObj);
+				list->setColor({ 31,31,31 });
+			}
+
+
+			
+
+		}
+		/*currentScene->setVisible(false);*/
+		ccColor3B color1 = { 161, 88, 44 };
+
+		ccColor3B color2 = { 194, 114, 62 };
+
+	
 		/*searchbar->setColor({ 80, 80, 80 });*/
 		//CCARRAY_FOREACH(((GJListLayer*)(parent2->getChildren()->objectAtIndex(0)))->getChildren(), pObj) {
 		//	CCLayerColor* currentSprite = (CCLayerColor*)pObj;
@@ -340,10 +429,7 @@ class $modify(CCLayerColor)
 		//			text->setColor({ 44, 44, 44 });*/
 		//	}
 		//}
-		ccColor3B color1 = { 161, 88, 44 };
-
-		ccColor3B color2 = { 194, 114, 62 };
-
+		
 		//Cell witout desc
 		if (GeodeGenericCell->getContentSize().width == 358 &&
 			GeodeGenericCell->getContentSize().height == 40 &&
@@ -394,6 +480,17 @@ class $modify(CCLayerColor)
 			text->setColor({ 44, 44, 44 });
 			/*std::cout << "Cell 1" << std::endl;*/
 		}
+
+		//for generic cells
+		if (this->getColor() == color1)
+		{
+			this->setColor({ 48, 48, 48 });
+		}
+
+		if (this->getColor() == color2)
+		{
+			this->setColor({ 80, 80, 80 });
+		}
 		CCLayerColor::draw();
 		/*c
 		auto GJListLayera = (GJListLayer*)ModListLayer->getChildren()->objectAtIndex(3);
@@ -418,14 +515,14 @@ class $modify(MenuGameLayer)
 
 			if (currentSprite->getContentSize().height == 512)
 			{
-				currentSprite->setColor({ 50,50,50 });
+				currentSprite->setColor({ 40,40,40 });
 			}
 
 			if (instanceof<GJGroundLayer>(pObj)) {
 
 				GJGroundLayer* ground = dynamic_cast<GJGroundLayer*>(pObj);
-				ground->updateGround01Color({ 50,50,50 });
-				ground->updateGround02Color({ 50,50,50 });
+				ground->updateGround01Color({ 40,40,40 });
+				ground->updateGround02Color({ 40,40,40 });
 			}
 		}
 			
