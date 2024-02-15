@@ -13,7 +13,15 @@
 			"id": "geode.node-ids",
 			"version": ">=v1.4.0",
 			"importance": "required"
+		},
+		{
+			"id": "geode.texture-loader",
+			"version": ">=v1.5.0",
+			"importance": "required"
 		}
+	],
+	"tags": [
+		"Customization"
 	],
 	"description": "Change the entire game interface to darker tones,\n in addition to being able to choose between the colors of some details."
 }
