@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "main"
+      - "**"
 
 jobs:
   build:
@@ -12,23 +12,25 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - name: Windows
-            os: windows-latest
-          
-          # - name: macOS
-          #   os: macos-latest
-          - name: Android32
-            os: ubuntu-latest
-            target: Android32
-          
-          - name: Android64
-            os: ubuntu-latest
-            target: Android64
-    name: ${{matrix.config.name}}
-    runs-on: ${{matrix.config.os}}
+        - name: Windows
+          os: windows-latest
+
+        #- name: macOS
+        #  os: macos-latest
+
+        - name: Android32
+          os: ubuntu-latest
+          target: Android32
+
+        - name: Android64
+          os: ubuntu-latest
+          target: Android64
+
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
@@ -36,7 +38,8 @@ jobs:
           bindings: iArtie/bindings
           bindings-ref: main
           combine: true
-          target: ${{matrix.config.target}}
+          target: ${{ matrix.config.target }}
+
   package:
     name: Package builds
     runs-on: ubuntu-latest
@@ -45,8 +48,8 @@ jobs:
     steps:
       - uses: geode-sdk/build-geode-mod/combine@main
         id: build
-      
-      - uses: actions/upload-artifact@v3
+
+      - uses: actions/upload-artifact@v4
         with:
           name: Build Output
-          path: ${{steps.build.outputs.build-output}}
+          path: ${{ steps.build.outputs.build-output }}
