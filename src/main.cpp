@@ -41,7 +41,7 @@ class $modify(URLCell)
 #ifdef GEODE_IS_ANDROID
 
 
-	TodoReturn updateBGColor(int a1)
+	void updateBGColor(int a1)
 	{
 		URLCell::updateBGColor(a1);
 		if (a1 % 2 == 1) // Si a1 es impar
@@ -76,7 +76,7 @@ class $modify(StatsCell)
 
 
 
-	TodoReturn updateBGColor(int a1)
+	void updateBGColor(int a1)
 	{
 		StatsCell::updateBGColor(a1);
 		if (a1 % 2 == 1) // Si a1 es impar
@@ -99,7 +99,7 @@ class $modify(GJScoreCell)
 #ifdef GEODE_IS_ANDROID
 
 
-	TodoReturn updateBGColor(int a1)
+	void updateBGColor(int a1)
 	{
 		GJScoreCell::updateBGColor(a1);
 		if (a1 % 2 == 1) // Si a1 es impar
@@ -120,7 +120,7 @@ class $modify(LevelListCell)
 #ifdef GEODE_IS_ANDROID
 
 
-	TodoReturn updateBGColor(int a1)
+	void updateBGColor(int a1)
 	{
 		LevelListCell::updateBGColor(a1);
 		if (a1 % 2 == 1) // Si a1 es impar
@@ -141,7 +141,7 @@ class $modify(GJLevelScoreCell)
 #ifdef GEODE_IS_ANDROID
 
 
-	TodoReturn updateBGColor(int a1)
+	void updateBGColor(int a1)
 	{
 		GJLevelScoreCell::updateBGColor(a1);
 		if (a1 % 2 == 1) // Si a1 es impar
@@ -160,7 +160,7 @@ class $modify(GJLevelScoreCell)
 class $modify(ProfilePage)
 {
 
-	TodoReturn setupCommentsBrowser(cocos2d::CCArray * a1)
+	void setupCommentsBrowser(cocos2d::CCArray * a1)
 	{
 		ProfilePage::setupCommentsBrowser(a1);
 
@@ -205,7 +205,7 @@ class $modify(ProfilePage)
 };
 class $modify (CommentCell)
 {
-	TodoReturn updateBGColor(int a1)
+	void updateBGColor(int a1)
 	{
 		CommentCell::updateBGColor(a1);
 		/*auto BG = (CCSprite*)this->getChildren()->objectAtIndex(0);*/
@@ -245,7 +245,7 @@ class $modify (CommentCell)
 
 class $modify (LevelCell)
 {
-	TodoReturn updateBGColor(int a1)
+	void updateBGColor(int a1)
 	{
 		LevelCell::updateBGColor(a1);
 		/*auto BG = (CCLayerColor*)this->getChildren()->objectAtIndex(0);
@@ -266,7 +266,7 @@ class $modify (LevelCell)
 
 class $modify(InfoLayer)
 {
-	TodoReturn setupCommentsBrowser(cocos2d::CCArray* a1)
+	void setupCommentsBrowser(cocos2d::CCArray* a1)
 	{
 		InfoLayer::setupCommentsBrowser(a1);
 		this->m_list->setColor({31,31,31});
@@ -303,7 +303,7 @@ class $modify(InfoLayer)
 
 class $modify(LevelBrowserLayer)
 {
-	TodoReturn setupLevelBrowser(cocos2d::CCArray * a1)
+	void setupLevelBrowser(cocos2d::CCArray * a1)
 	{
 		LevelBrowserLayer::setupLevelBrowser(a1);
 		this->m_list->setColor({ 31,31,31 });
@@ -504,7 +504,7 @@ class $modify(MenuGameLayer)
 
 
 
-	TodoReturn update(float a1)
+	void update(float a1)
 	{
 		MenuGameLayer::update(a1);
 
@@ -601,7 +601,7 @@ class $modify(LevelInfoLayer)
 
 class $modify(AchievementCell)
 {
-	TodoReturn updateBGColor(int a1)
+	void updateBGColor(int a1)
 	{
 		AchievementCell::updateBGColor(a1);
 		if (a1 % 2 == 1) // Si a1 es impar
@@ -619,7 +619,7 @@ class $modify(AchievementCell)
 
 class $modify(LeaderboardsLayer)
 {
-	TodoReturn setupLevelBrowser(cocos2d::CCArray * a1)
+	void setupLevelBrowser(cocos2d::CCArray * a1)
 	{
 		LeaderboardsLayer::setupLevelBrowser(a1);
 		this->m_list->setColor({ 31,31,31 });
@@ -685,7 +685,7 @@ class $modify(LevelLeaderboard)
 
 	}
 
-	TodoReturn loadLeaderboardFinished(cocos2d::CCArray* a1, char const* a2) 
+	void loadLeaderboardFinished(cocos2d::CCArray* a1, char const* a2)
 	{
 		LevelLeaderboard::loadLeaderboardFinished(a1, a2);
 		CCObject* pObj = nullptr;
@@ -699,7 +699,7 @@ class $modify(LevelLeaderboard)
 			}
 		}
 	}
-	TodoReturn loadScores()
+	void loadScores()
 	{
 		LevelLeaderboard::loadScores();
 		CCObject* pObj = nullptr;
@@ -717,7 +717,7 @@ class $modify(LevelLeaderboard)
 
 class $modify(FRequestProfilePage)
 {
-	TodoReturn setupCommentsBrowser(cocos2d::CCArray* a1)
+	void setupCommentsBrowser(cocos2d::CCArray* a1)
 	{
 
 
@@ -740,7 +740,7 @@ class $modify(FRequestProfilePage)
 
 class $modify(FriendsProfilePage)
 {
-	TodoReturn setupUsersBrowser(cocos2d::CCArray * a1, UserListType a2)
+	void setupUsersBrowser(cocos2d::CCArray * a1, UserListType a2)
 	{
 
 
@@ -763,7 +763,7 @@ class $modify(FriendsProfilePage)
 
 class $modify(MessagesProfilePage)
 {
-	TodoReturn setupCommentsBrowser(cocos2d::CCArray * a1)
+	void setupCommentsBrowser(cocos2d::CCArray * a1)
 	{
 
 
@@ -838,7 +838,7 @@ class $modify(EditLevelLayer)
 
 class $modify(GJLocalLevelScoreCell)
 {
-	TodoReturn updateBGColor(int a1)
+	void updateBGColor(int a1)
 	{
 		GJLocalLevelScoreCell::updateBGColor(a1);
 		/*auto BG = (CCLayerColor*)this->getChildren()->objectAtIndex(0);
