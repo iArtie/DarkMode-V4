@@ -210,7 +210,7 @@ class $modify (CommentCell)
 		CommentCell::updateBGColor(a1);
 		/*auto BG = (CCSprite*)this->getChildren()->objectAtIndex(0);*/
 		/*BG->setVisible(false);*/
-		std::cout << a1 << std::endl;
+		/*std::cout << a1 << std::endl;*/
 		
 
 		
@@ -371,7 +371,8 @@ class $modify(CCLayerColor)
 
 			
 
-			if (currentNode->getZOrder() == 105)
+			if (currentNode->getZOrder() == 105 && currentNode->getContentSize().height == 320
+				&& currentNode->getContentSize().width == 569)
 			{
 				CCLayer* roompopup = dynamic_cast<CCLayer*>(pObj3);
 				auto layersos = (CCLayer*)roompopup->getChildren()->objectAtIndex(0);
@@ -432,43 +433,42 @@ class $modify(CCLayerColor)
 		//}
 		
 		//Cell witout desc
-		if (GeodeGenericCell->getContentSize().width == 358 &&
-			GeodeGenericCell->getContentSize().height == 40 &&
-			this->getColor() == color1)
-		{
-			
-			/*auto GJListLayera = (GJListLayer*)ModListLayer->getChildren()->objectAtIndex(3);
-			auto searchbar = (CCLayerColor*)GJListLayera->getChildren()->objectAtIndex(0);*/
+		//if (GeodeGenericCell->getContentSize().width == 358 &&
+		//	GeodeGenericCell->getContentSize().height == 40 
+		//	&&  this->getColor() == color1 )
+		//{
+		//	
+		//	/*auto GJListLayera = (GJListLayer*)ModListLayer->getChildren()->objectAtIndex(3);
+		//	auto searchbar = (CCLayerColor*)GJListLayera->getChildren()->objectAtIndex(0);*/
 
-			
-			this->setColor({ 48, 48, 48 });
-			/*std::cout << "Cell 1" << std::endl;*/
-		}
+		//	
+		//	this->setColor({ 48, 48, 48 });
+		//	/*std::cout << "Cell 1" << std::endl;*/
+		//}
 		
-		if (GeodeGenericCell->getContentSize().width == 358 &&
-			GeodeGenericCell->getContentSize().height == 40 &&
-			this->getColor() == color2)
-		{
-			this->setColor({ 80, 80, 80 });
-			/*std::cout << "Cell 1" << std::endl;*/
-		}
+		//if (GeodeGenericCell->getContentSize().width == 358 &&
+		//	GeodeGenericCell->getContentSize().height == 40 &&
+		//	this->getColor() == color2)
+		//{
+		//	this->setColor({ 80, 80, 80 });
+		//	/*std::cout << "Cell 1" << std::endl;*/
+		//}
 
 		//Cells with desc
-		if (GeodeGenericCell->getContentSize().width == 358 &&
-			GeodeGenericCell->getContentSize().height == 60 &&
-			this->getColor() == color1)
-		{
-			this->setColor({ 48, 48, 48 });
-			/*std::cout << "Cell 1" << std::endl;*/
-		}
+		//if (GeodeGenericCell->getContentSize().width == 358 &&
+		//	GeodeGenericCell->getContentSize().height == 60 &&
+		//	this->getColor() == color1)
+		//{
+		//	this->setColor({ 48, 48, 48 });
+		//	/*std::cout << "Cell 1" << std::endl;*/
+		//}
 
-		if (GeodeGenericCell->getContentSize().width == 358 &&
+		/*if (GeodeGenericCell->getContentSize().width == 358 &&
 			GeodeGenericCell->getContentSize().height == 60 &&
 			this->getColor() == color2)
 		{
-			this->setColor({ 80, 80, 80 });
-			/*std::cout << "Cell 1" << std::endl;*/
-		}
+			
+		}*/
 
 		//search
 
@@ -595,7 +595,7 @@ class $modify(LevelInfoLayer)
 			counter++;
 		}
 		
-		std::cout << "Omg funciona" << std::endl;
+	/*	std::cout << "Omg funciona" << std::endl;*/
 	}
 };
 

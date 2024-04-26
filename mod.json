@@ -1,10 +1,10 @@
 {
-	"geode": "2.0.0-beta.23",
+	"geode": "2.0.0-beta.25",
 	"gd": {
 		"android": "2.205",
 		"win": "2.204"
 	},
-	"version": "v1.0.0",
+	"version": "v1.0.1",
 	"id": "bitz.darkmode_v4",
 	"name": "DarkMode V4",
 	"developers": [ "BitZ", "GhostPower" ],
