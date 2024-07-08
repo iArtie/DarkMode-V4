@@ -352,9 +352,10 @@ class $modify(CCLayerColor)
 		/*CCObject* pObj = nullptr;*/
 		auto currentScene = CCDirector::sharedDirector()->getRunningScene();
 
-		if (!currentScene->getChildByID("PlayLayer"))
-		{
-		
+
+	
+	
+
 		if (currentScene->getChildByID("dankmeme.globed2/GlobedMenuLayer"))
 		{
 			auto globedLayer = (CCLayer*)currentScene->getChildByID("dankmeme.globed2/GlobedMenuLayer");
@@ -615,7 +616,7 @@ class $modify(CCLayerColor)
 		{
 			this->setColor({ 32, 32, 32 });
 		}
-		}
+		
 
 		
 		CCLayerColor::draw();
