@@ -1,31 +1,20 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/MenuLayer.hpp>
-#include <Geode/modify/CommentCell.hpp>
-#include <Geode/modify/LevelCell.hpp>
-#include <Geode/modify/InfoLayer.hpp>
-#include <Geode/modify/LevelBrowserLayer.hpp>
 #include <Geode/modify/GJListLayer.hpp>
 #include <Geode/modify/CCLayerColor.hpp>
+#include <Geode/modify/CCLayer.hpp>
 #include <Geode/modify/MenuGameLayer.hpp>
-#include <Geode/modify/LevelInfoLayer.hpp>
-#include <Geode/modify/AchievementCell.hpp>
-#include <Geode/modify/LeaderboardsLayer.hpp>
-#include <Geode/modify/LevelSearchLayer.hpp>
-#include <Geode/modify/LevelLeaderboard.hpp>
-#include <Geode/modify/FRequestProfilePage.hpp>
-#include <Geode/modify/FriendsProfilePage.hpp>
-#include <Geode/modify/MessagesProfilePage.hpp>
-#include <Geode/modify/ShareLevelLayer.hpp>
-#include <Geode/modify/EditLevelLayer.hpp>
-#include <Geode/modify/GJLocalLevelScoreCell.hpp>
 #include <Geode/modify/ProfilePage.hpp>
-#include <Geode/modify/LoadingLayer.hpp>
-#include <Geode/modify/GJLevelScoreCell.hpp>
-#include <Geode/modify/LevelListCell.hpp>
-#include <Geode/modify/GJScoreCell.hpp>
-#include <Geode/modify/StatsCell.hpp>
-#include <Geode/modify/StatsLayer.hpp>
-#include <Geode/modify/URLCell.hpp>
+#include <Geode/modify/CommentCell.hpp>
+#include <Geode/modify/EditLevelLayer.hpp>
+#include <Geode/modify/ShareLevelLayer.hpp>
+#include <Geode/modify/LevelLeaderboard.hpp>
+#include <Geode/modify/LevelSearchLayer.hpp>
+#include <Geode/modify/LeaderboardsLayer.hpp>
+#include <Geode/modify/InfoLayer.hpp>
+#include <Geode/modify/LevelSelectLayer.hpp>
+#include <Geode/modify/LevelBrowserLayer.hpp>
+#include <Geode/modify/LevelInfoLayer.hpp>
 using namespace geode::prelude;
 
 template<typename Base, typename T>
@@ -33,130 +22,150 @@ inline bool instanceof(const T* ptr) {
 	return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
-//hola
-
-
-class $modify(URLCell)
+void updateGroundColorM(CCSpriteBatchNode* batch, const cocos2d::ccColor3B& color)
 {
-#ifdef GEODE_IS_ANDROID
-
-
-	void updateBGColor(int a1)
-	{
-		URLCell::updateBGColor(a1);
-		if (a1 % 2 == 1) // Si a1 es impar
-		{
-			this->m_backgroundLayer->setColor({ 80, 80, 80 });
-
-		}
-		else // Si a1 es par
-		{
-			this->m_backgroundLayer->setColor({ 48, 48, 48 });
-		}
-	}
-#endif
-
-};
-class $modify(StatsLayer)
-{
-	void customSetup()
-	{
-		
-		StatsLayer::customSetup();
-		this->setTag(80);
-		
-		
-		}
-
-
-
-};
-class $modify(StatsCell)
-{
-
-
-
-	void updateBGColor(int a1)
-	{
-		StatsCell::updateBGColor(a1);
-		if (a1 % 2 == 1) // Si a1 es impar
-		{
-			this->m_backgroundLayer->setColor({ 80, 80, 80 });
-
-		}
-
-		else // Si a1 es par
-		{
-			this->m_backgroundLayer->setColor({ 48, 48, 48 });
-		}
-
-		
-	}
-
-};
-class $modify(GJScoreCell)
-{
-#ifdef GEODE_IS_ANDROID
-
-
-	void updateBGColor(int a1)
-	{
-		GJScoreCell::updateBGColor(a1);
-		if (a1 % 2 == 1) // Si a1 es impar
-		{
-			this->m_backgroundLayer->setColor({ 80, 80, 80 });
-
-		}
-		else // Si a1 es par
-		{
-			this->m_backgroundLayer->setColor({ 48, 48, 48 });
-		}
-	}
-#endif
-
-};
-class $modify(LevelListCell)
-{
-#ifdef GEODE_IS_ANDROID
-
-
-	void updateBGColor(int a1)
-	{
-		LevelListCell::updateBGColor(a1);
-		if (a1 % 2 == 1) // Si a1 es impar
-		{
-			this->m_backgroundLayer->setColor({ 80, 80, 80 });
-
-		}
-		else // Si a1 es par
-		{
-			this->m_backgroundLayer->setColor({ 48, 48, 48 });
-		}
-	}
-#endif
-
-};
-class $modify(GJLevelScoreCell)
-{
-#ifdef GEODE_IS_ANDROID
-
-
-	void updateBGColor(int a1)
-	{
-		GJLevelScoreCell::updateBGColor(a1);
-		if (a1 % 2 == 1) // Si a1 es impar
-		{
-			this->m_backgroundLayer->setColor({ 80, 80, 80 });
-
-		}
-		else // Si a1 es par
-		{
-			this->m_backgroundLayer->setColor({ 48, 48, 48 });
-		}
-	}
-#endif
 	
-};
+		for (int i = 0; i < batch->getChildren()->count(); ++i) {
+			auto sprite = (CCSprite*)batch->getChildren()->objectAtIndex(i);
+			sprite->setColor(color);
+			for (int o = 0; o < sprite->getChildren()->count(); ++o) {
+				auto spriteChild = (CCSprite*)sprite->getChildren()->objectAtIndex(o);
+				spriteChild->setColor(color);
+			}
+		}
+	
+}
+
+void updateGroundColor(GJGroundLayer* ground, const bool layer1, const cocos2d::ccColor3B& color) {
+
+	auto m_pGround01Sprite = static_cast<CCSpriteBatchNode*>(ground->getChildByID("ground-sprites"));
+	auto m_pGround02Sprite = static_cast<CCSpriteBatchNode*>(ground->getChildByID("ground-sprites-2"));
+
+	CCArray* children = nullptr;  // Inicializamos children a nullptr
+
+	if (m_pGround01Sprite != nullptr && layer1) {
+		/*children = m_pGround01Sprite->getChildren();*/
+		for (int i = 0; i < m_pGround01Sprite->getChildren()->count(); ++i) {
+			static_cast<CCSprite*>(m_pGround01Sprite->getChildren()->objectAtIndex(i))->setColor(color);
+		}
+	}
+	if (m_pGround02Sprite != nullptr && !layer1) {
+		/*children = m_pGround02Sprite->getChildren();*/
+		for (int i = 0; i < m_pGround02Sprite->getChildren()->count(); ++i) {
+			static_cast<CCSprite*>(m_pGround02Sprite->getChildren()->objectAtIndex(i))->setColor(color);
+		}
+	}
+
+	//if (children != nullptr) {  // Verificamos que children no sea nulo
+	//	for (int i = 0; i < children->count(); ++i) {
+	//		static_cast<CCSprite*>(children->objectAtIndex(i))->setColor(color);
+	//	}
+	//}
+}
+
+
+
+
+//class $modify(StatsLayer)
+//{
+//	/*void customSetup()
+//	{
+//		
+//		StatsLayer::customSetup();
+//		this->setTag(80);
+//		
+//		
+//		}*/
+//
+//
+//
+//};
+//class $modify(StatsCell)
+//{
+//
+//
+//
+//	//void updateBGColor(int a1)
+//	//{
+//	//	StatsCell::updateBGColor(a1);
+//	//	if (a1 % 2 == 1) // Si a1 es impar
+//	//	{
+//	//		this->m_backgroundLayer->setColor({ 80, 80, 80 });
+//
+//	//	}
+//
+//	//	else // Si a1 es par
+//	//	{
+//	//		this->m_backgroundLayer->setColor({ 48, 48, 48 });
+//	//	}
+//
+//	//	
+//	//}
+//
+//};
+//class $modify(GJScoreCell)
+//{
+//#ifdef GEODE_IS_ANDROID
+//
+//
+//	void updateBGColor(int a1)
+//	{
+//		GJScoreCell::updateBGColor(a1);
+//		if (a1 % 2 == 1) // Si a1 es impar
+//		{
+//			this->m_backgroundLayer->setColor({ 80, 80, 80 });
+//
+//		}
+//		else // Si a1 es par
+//		{
+//			this->m_backgroundLayer->setColor({ 48, 48, 48 });
+//		}
+//	}
+//#endif
+//
+//};
+//class $modify(LevelListCell)
+//{
+//#ifdef GEODE_IS_ANDROID
+//
+//
+//	void updateBGColor(int a1)
+//	{
+//		LevelListCell::updateBGColor(a1);
+//		if (a1 % 2 == 1) // Si a1 es impar
+//		{
+//			this->m_backgroundLayer->setColor({ 80, 80, 80 });
+//
+//		}
+//		else // Si a1 es par
+//		{
+//			this->m_backgroundLayer->setColor({ 48, 48, 48 });
+//		}
+//	}
+//#endif
+//
+//};
+//class $modify(GJLevelScoreCell)
+//{
+//#ifdef GEODE_IS_ANDROID
+//
+//
+//	void updateBGColor(int a1)
+//	{
+//		GJLevelScoreCell::updateBGColor(a1);
+//		if (a1 % 2 == 1) // Si a1 es impar
+//		{
+//			this->m_backgroundLayer->setColor({ 80, 80, 80 });
+//
+//		}
+//		else // Si a1 es par
+//		{
+//			this->m_backgroundLayer->setColor({ 48, 48, 48 });
+//		}
+//	}
+//#endif
+//	
+//};
 class $modify(ProfilePage)
 {
 
@@ -203,66 +212,66 @@ class $modify(ProfilePage)
 
 	}
 };
-class $modify (CommentCell)
-{
-	void updateBGColor(int a1)
-	{
-		CommentCell::updateBGColor(a1);
-		/*auto BG = (CCSprite*)this->getChildren()->objectAtIndex(0);*/
-		/*BG->setVisible(false);*/
-		/*std::cout << a1 << std::endl;*/
-		
+//class $modify (CommentCell)
+//{
+//	//void updateBGColor(int a1)
+//	//{
+//	//	CommentCell::updateBGColor(a1);
+//	//	/*auto BG = (CCSprite*)this->getChildren()->objectAtIndex(0);*/
+//	//	/*BG->setVisible(false);*/
+//	//	/*std::cout << a1 << std::endl;*/
+//	//	
+//
+//	//	
+//	//	if (a1 % 2 == 1) // Si a1 es impar
+//	//	{
+//	//		this->m_backgroundLayer->setColor({ 80, 80, 80 });
+//	//		
+//	//	}
+//	//	else // Si a1 es par
+//	//	{
+//	//		this->m_backgroundLayer->setColor({ 48, 48, 48 });
+//	//	}
+//	//	CCObject* pObj = nullptr;
+//	//	CCARRAY_FOREACH(((CCLayer*)(this->getChildren()->objectAtIndex(1)))->getChildren(), pObj) {
+//
+//	//		if (instanceof<cocos2d::extension::CCScale9Sprite>(pObj)) {
+//
+//	//			cocos2d::extension::CCScale9Sprite* scale9Sprite = dynamic_cast<cocos2d::extension::CCScale9Sprite*>(pObj);
+//	//			scale9Sprite->setColor(ccBLACK);
+//	//			scale9Sprite->setOpacity(32);
+//	//		}
+//	//	}
+//	//}
+//
+//	void LoadFromComment(GJComment* a1)
+//	{
+//		CommentCell::loadFromComment(a1);
+//		a1->m_color = (ccBLACK);
+//	
+//	}
+//};
 
-		
-		if (a1 % 2 == 1) // Si a1 es impar
-		{
-			this->m_backgroundLayer->setColor({ 80, 80, 80 });
-			
-		}
-		else // Si a1 es par
-		{
-			this->m_backgroundLayer->setColor({ 48, 48, 48 });
-		}
-		CCObject* pObj = nullptr;
-		CCARRAY_FOREACH(((CCLayer*)(this->getChildren()->objectAtIndex(1)))->getChildren(), pObj) {
-
-			if (instanceof<cocos2d::extension::CCScale9Sprite>(pObj)) {
-
-				cocos2d::extension::CCScale9Sprite* scale9Sprite = dynamic_cast<cocos2d::extension::CCScale9Sprite*>(pObj);
-				scale9Sprite->setColor(ccBLACK);
-				scale9Sprite->setOpacity(32);
-			}
-		}
-	}
-
-	void LoadFromComment(GJComment* a1)
-	{
-		CommentCell::loadFromComment(a1);
-		a1->m_color = (ccBLACK);
-	
-	}
-};
-
-class $modify (LevelCell)
-{
-	void updateBGColor(int a1)
-	{
-		LevelCell::updateBGColor(a1);
-		/*auto BG = (CCLayerColor*)this->getChildren()->objectAtIndex(0);
-		auto parent = this->getParent();*/
-		this->m_backgroundLayer;
-		
-		if (a1 % 2 == 1) // Si a1 es impar
-		{
-			this->m_backgroundLayer->setColor({ 80, 80, 80 });
-
-		}
-		else // Si a1 es par
-		{
-			this->m_backgroundLayer->setColor({ 48, 48, 48 });
-		}
-	}
-};
+//class $modify (LevelCell)
+//{
+//	//void updateBGColor(int a1)
+//	//{
+//	//	LevelCell::updateBGColor(a1);
+//	//	/*auto BG = (CCLayerColor*)this->getChildren()->objectAtIndex(0);
+//	//	auto parent = this->getParent();*/
+//	//	this->m_backgroundLayer;
+//	//	
+//	//	if (a1 % 2 == 1) // Si a1 es impar
+//	//	{
+//	//		this->m_backgroundLayer->setColor({ 80, 80, 80 });
+//
+//	//	}
+//	//	else // Si a1 es par
+//	//	{
+//	//		this->m_backgroundLayer->setColor({ 48, 48, 48 });
+//	//	}
+//	//}
+//};
 
 class $modify(InfoLayer)
 {
@@ -310,8 +319,25 @@ class $modify(LevelBrowserLayer)
 	}
 };
 
+//class $modify(CCLayer)
+//{
+//	
+//};
+
+
 class $modify(CCLayerColor)
 {
+
+	
+		//if (currentScene->getChildByID("dankmeme.globed2/GlobedMenuLayer"))
+		//{
+		//	auto globedLayer = (CCLayer*)currentScene->getChildByID("dankmeme.globed2/GlobedMenuLayer");
+		//	/*globedLayer->setVisible(false);*/
+		//	auto bg = (CCSprite*)globedLayer->getChildByID("background");
+		//	bg->setVisible(false);
+
+		//}
+		
 
 	
 	
@@ -325,6 +351,19 @@ class $modify(CCLayerColor)
 
 		/*CCObject* pObj = nullptr;*/
 		auto currentScene = CCDirector::sharedDirector()->getRunningScene();
+
+		if (!currentScene->getChildByID("PlayLayer"))
+		{
+		
+		if (currentScene->getChildByID("dankmeme.globed2/GlobedMenuLayer"))
+		{
+			auto globedLayer = (CCLayer*)currentScene->getChildByID("dankmeme.globed2/GlobedMenuLayer");
+			/*globedLayer->setVisible(false);*/
+			auto bg = (CCSprite*)globedLayer->getChildByID("background");
+			bg->setColor({64,64,64});
+
+		}
+
 		auto Layer = (CCLayer*)currentScene->getChildren()->objectAtIndex(0);
 		
 		CCObject* pObj = nullptr;
@@ -418,7 +457,27 @@ class $modify(CCLayerColor)
 
 		ccColor3B color2 = { 194, 114, 62 };
 
+		//Comments colors cells
+
+		ccColor3B commentsColor1 = { 156, 85, 42 };
+
+		ccColor3B commentsColor2 = { 144, 79, 39 };
+
+		//Globed colors cells
+		ccColor3B globedCell1 = { 40, 53, 119 };
+
+		ccColor3B globedCell2 = { 51, 68, 153 };
 	
+		//for credits layer
+		ccColor3B globedCell3 = { 191, 114, 62 };
+
+		//FOR GEODE INDEX!!
+
+		ccColor3B mainColorGeode = { 168, 85, 44 };
+
+		ccColor3B searchBarCell = { 114, 63, 31 };
+
+		ccColor3B modCell2 = { 156, 85, 42 };
 		/*searchbar->setColor({ 80, 80, 80 });*/
 		//CCARRAY_FOREACH(((GJListLayer*)(parent2->getChildren()->objectAtIndex(0)))->getChildren(), pObj) {
 		//	CCLayerColor* currentSprite = (CCLayerColor*)pObj;
@@ -485,19 +544,87 @@ class $modify(CCLayerColor)
 		//for generic cells
 		if (this->getColor() == color1)
 		{
+
+			if (this->getContentSize().width == 340 && this->getContentSize().height == 80)
+			{
+				auto commentParent = this->getParent();
+				/*commentParent->setVisible(false);*/
+				CCLayer* commentLayer = (CCLayer*)commentParent->getChildren()->objectAtIndex(1);
+
+				CCScale9Sprite* bgComment = (CCScale9Sprite*)commentLayer->getChildByID("background");
+				bgComment->setColor(ccBLACK);
+				bgComment->setOpacity(32);
+			}
 			this->setColor({ 48, 48, 48 });
 		}
 
 		if (this->getColor() == color2)
 		{
+			if (this->getContentSize().width == 340 && this->getContentSize().height == 80)
+			{
+				auto commentParent = this->getParent();
+				/*commentParent->setVisible(false);*/
+				CCLayer* commentLayer = (CCLayer*)commentParent->getChildren()->objectAtIndex(1);
+
+				CCScale9Sprite* bgComment = (CCScale9Sprite*)commentLayer->getChildByID("background");
+				bgComment->setColor(ccBLACK);
+				bgComment->setOpacity(32);
+			}
 			this->setColor({ 80, 80, 80 });
 		}
+
+		//globed cells
+
+		
+		if (this->getColor() == globedCell1)
+		{
+			this->setColor({ 48, 48, 48 });
+		}
+
+		if (this->getColor() == globedCell2)
+		{
+			this->setColor({ 80, 80, 80 });
+		}
+
+		if (this->getColor() == globedCell3)
+		{
+			this->setColor({ 80, 80, 80 });
+		}
+
+		//Comments cells
+
+		if (this->getColor() == commentsColor1)
+		{
+			
+			this->setColor({ 48, 48, 48 });
+		}
+
+		if (this->getColor() == commentsColor2)
+		{
+			this->setColor({ 80, 80, 80 });
+		}
+
+		//Geode index
+
+		if (this->getColor() == mainColorGeode)
+		{
+			this->setColor({ 64, 64, 64 });
+		}
+
+		if (this->getColor() == searchBarCell)
+		{
+			this->setColor({ 32, 32, 32 });
+		}
+		}
+
+		
 		CCLayerColor::draw();
 		/*c
 		auto GJListLayera = (GJListLayer*)ModListLayer->getChildren()->objectAtIndex(3);
 		GJListLayera->setVisible(false);*/
 	}
 };
+
 
 class $modify(MenuGameLayer)
 {
@@ -522,8 +649,25 @@ class $modify(MenuGameLayer)
 			if (instanceof<GJGroundLayer>(pObj)) {
 
 				GJGroundLayer* ground = dynamic_cast<GJGroundLayer*>(pObj);
-				ground->updateGround01Color({ 40,40,40 });
-				ground->updateGround02Color({ 40,40,40 });
+
+				/*updateGroundColor(ground, true, {40,40,40});
+				updateGroundColor(ground, false, { 40,40,40 });*/
+
+				auto m_pGround01Sprite = static_cast<CCSpriteBatchNode*>(ground->getChildByID("ground-sprites"));
+				auto m_pGround02Sprite = static_cast<CCSpriteBatchNode*>(ground->getChildByID("ground-sprites-2"));
+
+
+				CCArray* children = nullptr;  // Inicializamos children a nullptr
+
+				for (int i = 0; i < m_pGround01Sprite->getChildren()->count(); ++i) {
+					if (m_pGround01Sprite != nullptr) {
+						updateGroundColorM(m_pGround01Sprite, { 40,40,40 });
+					}
+					if (m_pGround02Sprite != nullptr) {
+						updateGroundColorM(m_pGround02Sprite, { 40,40,40 });
+					}
+				}
+				
 			}
 		}
 			
@@ -599,19 +743,28 @@ class $modify(LevelInfoLayer)
 	}
 };
 
-class $modify(AchievementCell)
+class $modify(LevelSelectLayer)
 {
-	void updateBGColor(int a1)
+	void scrollLayerMoved(cocos2d::CCPoint a1)
 	{
-		AchievementCell::updateBGColor(a1);
-		if (a1 % 2 == 1) // Si a1 es impar
-		{
-			this->m_backgroundLayer->setColor({ 80, 80, 80 });
+		LevelSelectLayer::scrollLayerMoved(a1);
 
-		}
-		else // Si a1 es par
-		{
-			this->m_backgroundLayer->setColor({ 48, 48, 48 });
+		/*this->setVisible(false);*/
+		
+		GJGroundLayer* groundLayer = (GJGroundLayer*)this->getChildren()->objectAtIndex(1);
+		auto m_pGround01Sprite = static_cast<CCSpriteBatchNode*>(groundLayer->getChildByID("ground-sprites"));
+		auto m_pGround02Sprite = static_cast<CCSpriteBatchNode*>(groundLayer->getChildByID("ground-sprites-2"));
+
+
+		CCArray* children = nullptr;  // Inicializamos children a nullptr
+
+		for (int i = 0; i < m_pGround01Sprite->getChildren()->count(); ++i) {
+			if (m_pGround01Sprite != nullptr) {
+				updateGroundColorM(m_pGround01Sprite, { 40,40,40 });
+			}
+			if (m_pGround02Sprite != nullptr) {
+				updateGroundColorM(m_pGround02Sprite, { 40,40,40 });
+			}
 		}
 	}
 };
@@ -626,6 +779,36 @@ class $modify(LeaderboardsLayer)
 	}
 };
 
+class $modify(CommentCell)
+{
+	void loadFromComment(GJComment * a1)
+	{
+		CommentCell::loadFromComment(a1);
+
+		if (a1->m_levelID == 0 || a1->m_hasLevelID == 1)
+		{
+
+			if (this->m_height == 36)
+			{
+			}
+			else
+			{
+				CCObject* pObj = nullptr;
+				CCARRAY_FOREACH(((CCLayer*)(this->getChildren()->objectAtIndex(1)))->getChildren(), pObj) {
+
+					if (instanceof<cocos2d::extension::CCScale9Sprite>(pObj)) {
+
+						cocos2d::extension::CCScale9Sprite* scale9Sprite = dynamic_cast<cocos2d::extension::CCScale9Sprite*>(pObj);
+						scale9Sprite->setColor(ccBLACK);
+						scale9Sprite->setOpacity(32);
+					}
+
+				}
+			}
+		}
+	}
+
+};
 class $modify(LevelSearchLayer)
 {
 	bool init(int a1)
@@ -699,7 +882,7 @@ class $modify(LevelLeaderboard)
 			}
 		}
 	}
-	void loadScores()
+	/*void loadScores()
 	{
 		LevelLeaderboard::loadScores();
 		CCObject* pObj = nullptr;
@@ -712,77 +895,77 @@ class $modify(LevelLeaderboard)
 				
 			}
 		}
-	}
+	}*/
 };
+//
+//class $modify(FRequestProfilePage)
+//{
+//	/*void setupCommentsBrowser(cocos2d::CCArray* a1)
+//	{
+//
+//
+//		FRequestProfilePage::setupCommentsBrowser(a1);
+//
+//		CCObject* pObj = nullptr;
+//		CCARRAY_FOREACH(((CCLayer*)(this->m_mainLayer))->getChildren(), pObj) {
+//
+//			if (instanceof<GJCommentListLayer>(pObj)) {
+//
+//				GJCommentListLayer* list = dynamic_cast<GJCommentListLayer*>(pObj);
+//				list->setColor({ 31,31,31 });
+//
+//			}
+//		}
+//
+//
+//	}*/
+//};
 
-class $modify(FRequestProfilePage)
-{
-	void setupCommentsBrowser(cocos2d::CCArray* a1)
-	{
+//class $modify(FriendsProfilePage)
+//{
+//	/*void setupUsersBrowser(cocos2d::CCArray * a1, UserListType a2)
+//	{
+//
+//
+//		FriendsProfilePage::setupUsersBrowser(a1, a2);
+//
+//		CCObject* pObj = nullptr;
+//		CCARRAY_FOREACH(((CCLayer*)(this->m_mainLayer))->getChildren(), pObj) {
+//
+//			if (instanceof<GJCommentListLayer>(pObj)) {
+//
+//				GJCommentListLayer* list = dynamic_cast<GJCommentListLayer*>(pObj);
+//				list->setColor({ 31,31,31 });
+//
+//			}
+//		}
+//
+//
+//	}*/
+//};
 
-
-		FRequestProfilePage::setupCommentsBrowser(a1);
-
-		CCObject* pObj = nullptr;
-		CCARRAY_FOREACH(((CCLayer*)(this->m_mainLayer))->getChildren(), pObj) {
-
-			if (instanceof<GJCommentListLayer>(pObj)) {
-
-				GJCommentListLayer* list = dynamic_cast<GJCommentListLayer*>(pObj);
-				list->setColor({ 31,31,31 });
-
-			}
-		}
-
-
-	}
-};
-
-class $modify(FriendsProfilePage)
-{
-	void setupUsersBrowser(cocos2d::CCArray * a1, UserListType a2)
-	{
-
-
-		FriendsProfilePage::setupUsersBrowser(a1, a2);
-
-		CCObject* pObj = nullptr;
-		CCARRAY_FOREACH(((CCLayer*)(this->m_mainLayer))->getChildren(), pObj) {
-
-			if (instanceof<GJCommentListLayer>(pObj)) {
-
-				GJCommentListLayer* list = dynamic_cast<GJCommentListLayer*>(pObj);
-				list->setColor({ 31,31,31 });
-
-			}
-		}
-
-
-	}
-};
-
-class $modify(MessagesProfilePage)
-{
-	void setupCommentsBrowser(cocos2d::CCArray * a1)
-	{
-
-
-		MessagesProfilePage::setupCommentsBrowser(a1);
-
-		CCObject* pObj = nullptr;
-		CCARRAY_FOREACH(((CCLayer*)(this->m_mainLayer))->getChildren(), pObj) {
-
-			if (instanceof<GJCommentListLayer>(pObj)) {
-
-				GJCommentListLayer* list = dynamic_cast<GJCommentListLayer*>(pObj);
-				list->setColor({ 31,31,31 });
-
-			}
-		}
-
-
-	}
-};
+//class $modify(MessagesProfilePage)
+//{
+//	/*void setupCommentsBrowser(cocos2d::CCArray * a1)
+//	{
+//
+//
+//		MessagesProfilePage::setupCommentsBrowser(a1);
+//
+//		CCObject* pObj = nullptr;
+//		CCARRAY_FOREACH(((CCLayer*)(this->m_mainLayer))->getChildren(), pObj) {
+//
+//			if (instanceof<GJCommentListLayer>(pObj)) {
+//
+//				GJCommentListLayer* list = dynamic_cast<GJCommentListLayer*>(pObj);
+//				list->setColor({ 31,31,31 });
+//
+//			}
+//		}
+//*/
+//
+//	
+//};
 
 class $modify(ShareLevelLayer)
 {
@@ -836,23 +1019,23 @@ class $modify(EditLevelLayer)
 	}
 };
 
-class $modify(GJLocalLevelScoreCell)
-{
-	void updateBGColor(int a1)
-	{
-		GJLocalLevelScoreCell::updateBGColor(a1);
-		/*auto BG = (CCLayerColor*)this->getChildren()->objectAtIndex(0);
-		auto parent = this->getParent();*/
-		this->m_backgroundLayer;
-
-		if (a1 % 2 == 1) // Si a1 es impar
-		{
-			this->m_backgroundLayer->setColor({ 80, 80, 80 });
-
-		}
-		else // Si a1 es par
-		{
-			this->m_backgroundLayer->setColor({ 48, 48, 48 });
-		}
-	}
-};
+//class $modify(GJLocalLevelScoreCell)
+//{
+//	//void updateBGColor(int a1)
+//	//{
+//	//	GJLocalLevelScoreCell::updateBGColor(a1);
+//	//	/*auto BG = (CCLayerColor*)this->getChildren()->objectAtIndex(0);
+//	//	auto parent = this->getParent();*/
+//	//	this->m_backgroundLayer;
+//
+//	//	if (a1 % 2 == 1) // Si a1 es impar
+//	//	{
+//	//		this->m_backgroundLayer->setColor({ 80, 80, 80 });
+//
+//	//	}
+//	//	else // Si a1 es par
+//	//	{
+//	//		this->m_backgroundLayer->setColor({ 48, 48, 48 });
+//	//	}
+//	//}
+//};
