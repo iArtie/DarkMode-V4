@@ -203,7 +203,7 @@ class $modify(ProfilePage)
 
 		//	// Verifica si el contentSize cumple con tus condiciones
 		//	if (hijo->getContentSize().equals(Size(100.0f, 100.0f))) {
-		//		// Llama a tu función personalizada
+		//		// Llama a tu funciÃ³n personalizada
 		//		tuFuncionPersonalizada(hijo);
 		//	}
 		//}
@@ -537,8 +537,9 @@ class $modify(CCLayerColor)
 			this->getColor() == color2)
 		{
 			this->setColor({ 80, 80, 80 });
-			auto text = (CCScale9Sprite*)this->getChildren()->objectAtIndex(1);
-			text->setColor({ 44, 44, 44 });
+			if (this->getChildrenCount() > 0) {
+				if (auto text = typeinfo_cast<CCScale9Sprite*>(this->getChildren()->objectAtIndex(1)) text->setColor({ 44, 44, 44 });
+			}
 			/*std::cout << "Cell 1" << std::endl;*/
 		}
 
