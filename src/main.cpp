@@ -537,8 +537,12 @@ class $modify(CCLayerColor)
 			this->getColor() == color2)
 		{
 			this->setColor({ 80, 80, 80 });
-			auto text = (CCScale9Sprite*)this->getChildren()->objectAtIndex(1);
-			text->setColor({ 44, 44, 44 });
+			if (this->getChildrenCount() > 1) {
+				if (auto text = typeinfo_cast<CCScale9Sprite*>(this->getChildren()->objectAtIndex(1)))
+				{
+					text->setColor({ 44, 44, 44 });
+				}
+			}
 			/*std::cout << "Cell 1" << std::endl;*/
 		}
 
