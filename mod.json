@@ -4,7 +4,7 @@
 		"android": "2.206",
 		"win": "2.206"
 	},
-	"version": "v1.0.2",
+	"version": "v1.0.3",
 	"id": "bitz.darkmode_v4",
 	"name": "DarkMode V4",
 	"developers": [ "BitZ", "GhostPower" ],
