@@ -7,7 +7,7 @@
 	"version": "v1.0.3",
 	"id": "bitz.darkmode_v4",
 	"name": "DarkMode V4",
-	"developers": [ "BitZ", "GhostPower" ],
+	"developers": [ "BitZ", "GhostPower13" ],
 	"dependencies": [
 		{
 			"id": "geode.node-ids",
