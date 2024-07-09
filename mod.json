@@ -16,7 +16,16 @@
 		}
 	],
 	"tags": [
-		"Customization"
+		"customization",
+		"interface"
 	],
+	"links": {
+		"source": "https://github.com/iArtie/DarkMode-V4",
+		"community": "https://discord.gg/gXg8w4xJDA"
+	},
+	"issues": {
+		"info": "Post your issues on the <cp>Issue tracking repository</c>.",
+		"url": "https://github.com/iArtie/DarkMode-V4/issues/new/choose"
+	},
 	"description": "Change the entire game interface to darker tones,\n in addition to being able to choose between the colors of some details."
 }
