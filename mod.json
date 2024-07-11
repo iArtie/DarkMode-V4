@@ -13,7 +13,7 @@
 			"id": "geode.node-ids",
 			"version": ">=v1.4.0",
 			"importance": "required"
-		}
+		},
 		{
 			"id": "geode.texture-loader",
 			"version": ">=v1.6.0",
