@@ -1,4 +1,8 @@
 # DarkMode V4 Changelog
+
+## v1.0.4 (2024-07-10)
+- Crash fix with Menu Shaders mod
+
 ## v1.0.3 (2024-07-08)
 - Integrated demonlist crash fix by justin
 

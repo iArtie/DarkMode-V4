@@ -4,7 +4,7 @@
 		"android": "2.206",
 		"win": "2.206"
 	},
-	"version": "v1.0.3",
+	"version": "v1.0.4",
 	"id": "bitz.darkmode_v4",
 	"name": "DarkMode V4",
 	"developers": [ "BitZ", "GhostPower13" ],
@@ -12,6 +12,11 @@
 		{
 			"id": "geode.node-ids",
 			"version": ">=v1.4.0",
+			"importance": "required"
+		}
+		{
+			"id": "geode.texture-loader",
+			"version": ">=v1.6.0",
 			"importance": "required"
 		}
 	],

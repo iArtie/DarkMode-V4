@@ -755,22 +755,32 @@ class $modify(LevelSelectLayer)
 		LevelSelectLayer::scrollLayerMoved(a1);
 
 		/*this->setVisible(false);*/
+		CCObject* pObj = nullptr;
+
+		CCARRAY_FOREACH(this->getChildren(), pObj) {
+			CCNode* currentNode = (CCNode*)pObj;
+			
+			if (instanceof<GJGroundLayer>(pObj)) {
+				GJGroundLayer* groundLayer = (GJGroundLayer*)currentNode;
+				auto m_pGround01Sprite = static_cast<CCSpriteBatchNode*>(groundLayer->getChildByID("ground-sprites"));
+				auto m_pGround02Sprite = static_cast<CCSpriteBatchNode*>(groundLayer->getChildByID("ground-sprites-2"));
+
+
+				CCArray* children = nullptr;
+
+				for (int i = 0; i < m_pGround01Sprite->getChildren()->count(); ++i) {
+					if (m_pGround01Sprite != nullptr) {
+						updateGroundColorM(m_pGround01Sprite, { 40,40,40 });
+					}
+					if (m_pGround02Sprite != nullptr) {
+						updateGroundColorM(m_pGround02Sprite, { 40,40,40 });
+					}
+				}
+			}
+			
 		
-		GJGroundLayer* groundLayer = (GJGroundLayer*)this->getChildren()->objectAtIndex(1);
-		auto m_pGround01Sprite = static_cast<CCSpriteBatchNode*>(groundLayer->getChildByID("ground-sprites"));
-		auto m_pGround02Sprite = static_cast<CCSpriteBatchNode*>(groundLayer->getChildByID("ground-sprites-2"));
-
-
-		CCArray* children = nullptr;  
-
-		for (int i = 0; i < m_pGround01Sprite->getChildren()->count(); ++i) {
-			if (m_pGround01Sprite != nullptr) {
-				updateGroundColorM(m_pGround01Sprite, { 40,40,40 });
-			}
-			if (m_pGround02Sprite != nullptr) {
-				updateGroundColorM(m_pGround02Sprite, { 40,40,40 });
-			}
 		}
+		
 	}
 };
 
