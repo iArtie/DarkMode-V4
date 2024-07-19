@@ -1,5 +1,8 @@
 # DarkMode V4 Changelog
 
+## v1.0.5 (2024-07-19)
+- Transition Customizer crash fix
+
 ## v1.0.4 (2024-07-10)
 - Crash fix with Menu Shaders mod
 

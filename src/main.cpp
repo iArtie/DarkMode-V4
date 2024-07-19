@@ -365,44 +365,51 @@ class $modify(CCLayerColor)
 
 		}
 
-		auto Layer = (CCLayer*)currentScene->getChildren()->objectAtIndex(0);
-		
-		CCObject* pObj = nullptr;
+		if (currentScene->getChildrenCount() != 0)
+		{
+			if (auto Layer = (CCLayer*)currentScene->getChildren()->objectAtIndex(0))
+			{
+				CCObject* pObj = nullptr;
 
 
-		CCARRAY_FOREACH(((CCSprite*)(Layer))->getChildren(), pObj) {
-
-			
-			if (instanceof<GJListLayer>(pObj)) {
-
-				GJListLayer* list = dynamic_cast<GJListLayer*>(pObj);
-				list->setColor({ 31,31,31 });
-			}
+				CCARRAY_FOREACH(((CCSprite*)(Layer))->getChildren(), pObj) {
 
 
-			if (instanceof<StatsLayer>(pObj)) {
+					if (instanceof<GJListLayer>(pObj)) {
 
-				StatsLayer* stats = dynamic_cast<StatsLayer*>(pObj);
-				auto layersos = (CCLayer*)stats->getChildren()->objectAtIndex(0);
-				
-				CCObject* pObj2 = nullptr;
-
-
-				CCARRAY_FOREACH(((CCSprite*)(layersos))->getChildren(), pObj2) {
-
-					/*CCSprite* currentSprite = (CCSprite*)pObj;*/
-
-					if (instanceof<GJListLayer>(pObj2)) {
-
-						GJListLayer* list = dynamic_cast<GJListLayer*>(pObj2);
+						GJListLayer* list = dynamic_cast<GJListLayer*>(pObj);
 						list->setColor({ 31,31,31 });
 					}
-					
+
+
+					if (instanceof<StatsLayer>(pObj)) {
+
+						StatsLayer* stats = dynamic_cast<StatsLayer*>(pObj);
+						auto layersos = (CCLayer*)stats->getChildren()->objectAtIndex(0);
+
+						CCObject* pObj2 = nullptr;
+
+
+						CCARRAY_FOREACH(((CCSprite*)(layersos))->getChildren(), pObj2) {
+
+							/*CCSprite* currentSprite = (CCSprite*)pObj;*/
+
+							if (instanceof<GJListLayer>(pObj2)) {
+
+								GJListLayer* list = dynamic_cast<GJListLayer*>(pObj2);
+								list->setColor({ 31,31,31 });
+							}
+
+
+						}
+					}
 
 				}
 			}
-
 		}
+		
+		
+		
 
 		CCObject* pObj3 = nullptr;
 		CCARRAY_FOREACH(((CCSprite*)(currentScene))->getChildren(), pObj3) {
@@ -445,7 +452,7 @@ class $modify(CCLayerColor)
 			
 			if (instanceof<GJListLayer>(pObj3)) {
 
-				GJListLayer* list = dynamic_cast<GJListLayer*>(pObj);
+				GJListLayer* list = dynamic_cast<GJListLayer*>(pObj3);
 				list->setColor({ 31,31,31 });
 			}
 
