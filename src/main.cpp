@@ -792,14 +792,14 @@ class $modify(LevelSelectLayer)
 };
 
 
-class $modify(LeaderboardsLayer)
-{
-	void setupLevelBrowser(cocos2d::CCArray * a1)
-	{
-		LeaderboardsLayer::setupLevelBrowser(a1);
-		this->m_list->setColor({ 31,31,31 });
-	}
-};
+//class $modify(LeaderboardsLayer)
+//{
+//	void setupLevelBrowser(cocos2d::CCArray * a1)
+//	{
+//		LeaderboardsLayer::setupLevelBrowser(a1);
+//		this->m_list->setColor({ 31,31,31 });
+//	}
+//};
 
 class $modify(CommentCell)
 {
