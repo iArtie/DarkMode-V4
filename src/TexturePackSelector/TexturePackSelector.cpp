@@ -215,7 +215,7 @@ public:
 
 
 			std::string version = Mod::get()->getSavedValue<std::string>(versionKeyCStr);
-			std::cout << "Version for " << mode << ": " << version << std::endl;
+		
 
 
 			if (version == "empty" || version.empty()) {
