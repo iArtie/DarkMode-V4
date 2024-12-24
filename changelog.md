@@ -3,6 +3,7 @@
 ## v1.0.6 (2024-12-24)
 - Big code optimization!
 - New texture pack selector thing!
+- macOS support!
 - Now you can download the texturepacks without leave to GD :D
 
 ## v1.0.5 (2024-07-19)
