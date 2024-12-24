@@ -1,11 +1,11 @@
 {
-	"geode": "3.3.1",
+	"geode": "4.1.1",
 	"gd": {
-		"android": "2.206",
-		"win": "2.206",
-		"mac": "2.206"
+		"android": "2.2074",
+		"win": "2.2074",
+		"mac": "2.2074"
 	},
-	"version": "v1.0.5",
+	"version": "v1.0.6",
 	"id": "bitz.darkmode_v4",
 	"name": "DarkMode V4",
 	"developers": [ "BitZ", "GhostPower13" ],
@@ -21,6 +21,16 @@
 			"importance": "required"
 		}
 	],
+	"resources": {
+
+		"spritesheets": {
+			"IconSheet": [
+				"resources/icon/*.png"
+			]
+
+		}
+
+	},
 	"tags": [
 		"customization",
 		"interface"
