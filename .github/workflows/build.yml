@@ -5,6 +5,10 @@ on:
   push:
     branches:
       - "main"
+  pull_request:
+    branches:
+      - "main"
+
 jobs:
   build:
     strategy:
@@ -13,7 +17,6 @@ jobs:
         config:
         - name: Windows
           os: windows-latest
-        # will uncomment mac only when it releases
         - name: macOS
           os: macos-latest
         - name: Android32
@@ -22,10 +25,6 @@ jobs:
         - name: Android64
           os: ubuntu-latest
           target: Android64
-        #- name: iOS
-        #  os: macos-latest
-        #  target: iOS
-        
 
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
@@ -36,7 +35,6 @@ jobs:
           submodules: 'recursive'
           
       - name: Build the mod
-        #uses: geode-sdk/build-geode-mod@main
         uses: geode-sdk/build-geode-mod@main
         with:
           sdk: 'nightly'
