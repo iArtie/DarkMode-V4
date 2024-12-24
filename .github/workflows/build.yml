@@ -55,5 +55,5 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: DarkModeV4 Build Output
+          name: DarkMode V4 Build Output
           path: ${{ steps.build.outputs.build-output }}
