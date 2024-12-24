@@ -7,6 +7,67 @@
 
 using namespace geode::prelude;
 
+// small wrapper with precalculated sizes to make ui easier
+struct PopupLayout {
+	cocos2d::CCSize winSize, popupSize;
+	float left, right, bottom, top;
+
+	cocos2d::CCSize center, centerLeft, centerTop, centerRight, centerBottom;
+	cocos2d::CCSize bottomLeft, topLeft, bottomRight, topRight;
+
+	cocos2d::CCPoint fromTop(float y);
+	cocos2d::CCPoint fromTop(cocos2d::CCSize off);
+
+	cocos2d::CCPoint fromBottom(float y);
+	cocos2d::CCPoint fromBottom(cocos2d::CCSize off);
+
+	cocos2d::CCPoint fromCenter(cocos2d::CCSize off);
+	cocos2d::CCPoint fromCenter(float x, float y);
+
+	cocos2d::CCPoint fromBottomRight(cocos2d::CCSize off);
+	cocos2d::CCPoint fromBottomRight(float x, float y);
+
+	cocos2d::CCPoint fromTopRight(cocos2d::CCSize off);
+	cocos2d::CCPoint fromTopRight(float x, float y);
+
+	cocos2d::CCPoint fromBottomLeft(cocos2d::CCSize off);
+	cocos2d::CCPoint fromBottomLeft(float x, float y);
+
+	cocos2d::CCPoint fromTopLeft(cocos2d::CCSize off);
+	cocos2d::CCPoint fromTopLeft(float x, float y);
+};
+
+static PopupLayout popupLayoutWith(const CCSize& popupSize, bool useWinSize) {
+	PopupLayout layout;
+
+	layout.winSize = CCDirector::get()->getWinSize();
+	layout.popupSize = popupSize;
+
+	if (useWinSize) {
+		layout.center = CCSize{ layout.winSize.width / 2, layout.winSize.height / 2 };
+	}
+	else {
+		layout.center = CCSize{ layout.popupSize.width / 2, layout.popupSize.height / 2 };
+	}
+
+	layout.left = layout.center.width - popupSize.width / 2;
+	layout.bottom = layout.center.height - popupSize.height / 2;
+	layout.right = layout.center.width + popupSize.width / 2;
+	layout.top = layout.center.height + popupSize.height / 2;
+
+	layout.centerLeft = CCSize{ layout.left, layout.center.height };
+	layout.centerRight = CCSize{ layout.right, layout.center.height };
+	layout.centerTop = CCSize{ layout.center.width, layout.top };
+	layout.centerBottom = CCSize{ layout.center.width, layout.bottom };
+
+	layout.bottomLeft = CCSize{ layout.left, layout.bottom };
+	layout.topLeft = CCSize{ layout.left, layout.top };
+	layout.bottomRight = CCSize{ layout.right, layout.bottom };
+	layout.topRight = CCSize{ layout.right, layout.top };
+
+	return layout;
+}
+
 class TexturePackSelector : public geode::Popup<std::string const&> {
 protected:
 
@@ -21,9 +82,7 @@ public:
 		auto winSize = director->getWinSize();
 		CCArray* texturepacks = CCArray::create();
 
-		auto label = CCLabelBMFont::create(value.c_str(), "bigFont.fnt");
-
-
+	
 		// Lista de nombres de imágenes
 		std::vector<std::string> imageNames = {
 			"DMv4_Metal_Btn.png"_spr,
@@ -156,7 +215,7 @@ public:
 
 
 			std::string version = Mod::get()->getSavedValue<std::string>(versionKeyCStr);
-			
+			std::cout << "Version for " << mode << ": " << version << std::endl;
 
 
 			if (version == "empty" || version.empty()) {
@@ -186,24 +245,35 @@ public:
 		auto* listView = ListView::create(texturepacks, 72.0F, 410.0f, 200.0f);
 
 		auto listLayer = GJListLayer::create(listView, "", { 191, 114, 62, 255 }, 410.f, 200.f, 1);
+	
+		listLayer->setPosition(winSize / 2 - listLayer->getScaledContentSize() / 2 - ccp(0, 5)); //Center position sucks on GJListLayer
 
-		listLayer->setPosition((winSize / 2) - (listLayer->getContentSize() / 2) - CCPoint(26.5, 25));
-		m_mainLayer->addChild(listLayer);
+	
+		listLayer->setScale(0.1f);
 
-		//if (auto right = listLayer->getChildByID("right-border")) {
-		//	/*right->setScaleX(0.8f);*/
-		//	/*right->setPositionX(277.65);*/
-		//}
+		
+		
+		auto scaleTo = CCScaleTo::create(0.3f, 1.0f); 
+		auto easeBackOut = CCEaseBackOut::create(scaleTo);
 
-		//if (auto left = listLayer->getChildByID("left-border")) {
-		//	/*left->setScaleX(0.8f);*/
-		//	/*left->setPositionX(-5.45);*/
-		//}
+	
+		listLayer->runAction(easeBackOut);
+
+		addChild(listLayer);
+
 		auto scrollbar = Scrollbar::create(listView->m_tableView);
 
 		listView->m_tableView->setContentSize({ 415,200 });
-		scrollbar->setPosition({ (winSize.width / 2) + (listLayer->getScaledContentSize().width / 2) + 10 - 15, winSize.height / 2 - 25 });
-		m_mainLayer->addChild(scrollbar);
+		scrollbar->setPosition({ (winSize.width / 2) + (listLayer->getScaledContentSize().width / 2) + 215, winSize.height / 2 });
+		
+
+		scrollbar->setScale(0.1f);
+		auto scaleTo2 = CCScaleTo::create(0.3f, 1.0f);
+		auto easeBackOut2 = CCEaseBackOut::create(scaleTo2);
+
+
+		scrollbar->runAction(easeBackOut2);
+		addChild(scrollbar);
 
 
 		return true;
@@ -222,6 +292,9 @@ public:
 
 		delete ret;
 		return nullptr;
+	}
+	void getPopupLayoutAnchored(const CCSize& popupSize) {
+		return ;
 	}
 
 	void onSelectTP(CCObject* sender)
@@ -279,7 +352,7 @@ public:
 						// Si falla la descarga
 						Notification::create("Download Failed", CCSprite::createWithSpriteFrameName("GJ_deleteIcon_001.png"))->show();
 						std::filesystem::remove(fmt::format("{}/packs/{}.zip", Loader::get()->getInstalledMod("geode.texture-loader")->getConfigDir(), id));
-						
+					
 					}
 				}
 
