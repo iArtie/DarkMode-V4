@@ -72,6 +72,34 @@ class TexturePackSelector : public geode::Popup<std::string const&> {
 protected:
 
 	EventListener<web::WebTask> m_downloadTP;
+	EventListener<web::WebTask> m_listListener;
+	std::string jsonString;
+	std::vector<std::string> versions;
+	std::string empty = "empty";
+	ListView* listView;
+	GJListLayer* listLayer;
+
+	Scrollbar* scrollbar;
+	std::vector<std::string> imageNames = {
+		"DMv4_Metal_Btn.png"_spr,
+		"DMv4_Blood_Btn.png"_spr,
+		"DMv4_Earth_Btn.png"_spr,
+		"DMv4_Fire_Btn.png"_spr,
+		"DMv4_Ice_Btn.png"_spr,
+		"DMv4_Lava_Btn.png"_spr,
+		"DMv4_Light_Btn.png"_spr,
+		"DMv4_Moon_Btn.png"_spr,
+		"DMv4_Poison_Btn.png"_spr,
+		"DMv4_Shadow_Btn.png"_spr,
+		"DMv4_Soul_Btn.png"_spr,
+		"DMv4_Star_Btn.png"_spr
+	};
+	std::vector<std::string> modes = {
+		"METAL", "BLOOD", "EARTH", "FIRE", "ICE",
+		"LAVA", "LIGHT", "MOON", "POISON", "SHADOW",
+		"SOUL", "STAR"
+	};
+	bool m_finishedLoading = false;
 
 public:
 	bool setup(std::string const& value) {
@@ -82,149 +110,168 @@ public:
 		auto winSize = director->getWinSize();
 		CCArray* texturepacks = CCArray::create();
 
-	
-		// Lista de nombres de imágenes
-		std::vector<std::string> imageNames = {
-			"DMv4_Metal_Btn.png"_spr,
-			"DMv4_Blood_Btn.png"_spr,
-			"DMv4_Earth_Btn.png"_spr,
-			"DMv4_Fire_Btn.png"_spr,
-			"DMv4_Ice_Btn.png"_spr,
-			"DMv4_Lava_Btn.png"_spr,
-			"DMv4_Light_Btn.png"_spr,
-			"DMv4_Moon_Btn.png"_spr,
-			"DMv4_Poison_Btn.png"_spr,
-			"DMv4_Shadow_Btn.png"_spr,
-			"DMv4_Soul_Btn.png"_spr,
-			"DMv4_Star_Btn.png"_spr
-		};
 
-		// Lista de nombres de modos
-		std::vector<std::string> modes = {
-			"METAL", "BLOOD", "EARTH", "FIRE", "ICE",
-			"LAVA", "LIGHT", "MOON", "POISON", "SHADOW",
-			"SOUL", "STAR"
-		};
-
+		reloadData();
 
 		const CCSize cellSize = { 415.0f, 72.0f };
+	
+			for (int i = 0; i < 12; ++i) {
 
+				auto texture = TexturePackCell::create({
+						cellSize,
+						(imageNames[i]).c_str(),
+						modes[i].c_str(),
+						versions[i].c_str(),
+						this,
+						menu_selector(TexturePackSelector::onSelectTP)
+					});
 
-#define TPS_URL "https://raw.githubusercontent.com/iArtie/DarkModeV4-Index/refs/heads/main/texturepacks.json"
-
-
-		std::string jsonString;
-
-
-
-		static std::optional<web::WebTask> task = std::nullopt;
-		task = web::WebRequest().get(TPS_URL).map([this, &jsonString](web::WebResponse* res) {
-			if (!res->ok()) {
-				queueInMainThread([] { Notification::create("DarkMode Texture Pack index Load Failed", NotificationIcon::Error)->show(); });
-				task = std::nullopt;
-				return *res;
+				texture->button->setID(modes[i].c_str());
+				texturepacks->addObject(texture);
 			}
+		
+			//reload menu
+			auto reloadMenu = CCMenu::create();
+			reloadMenu->setPosition({ 0, 0 });
+			auto reloadBtnSprite = CCSprite::createWithSpriteFrameName("GJ_updateBtn_001.png");
+			auto reloadBtn = CCMenuItemSpriteExtra::create(reloadBtnSprite, this, menu_selector(TexturePackSelector::reloadDataCallBack));
+			reloadBtn->setPosition({ 30.f, 30.f });
+			reloadMenu->addChild(reloadBtn);
+			reloadMenu->setID("reload-menu");
+			m_mainLayer->addChild(reloadMenu);
 
-			if (!res->json().isOk()) {
-				log::error("Failed to parse developer badges: {}", res->json().unwrapErr());
-				return *res;
+		listView = ListView::create(texturepacks, 72.0F, 410.0f, 200.0f);
+
+		listLayer = GJListLayer::create(listView, "", { 191, 114, 62, 255 }, 410.f, 200.f, 1);
+		listLayer->setScale(0.9f);
+		listLayer->setPosition(winSize / 2 - listLayer->getScaledContentSize() / 2 - ccp(25, 5)); //Center position sucks on GJListLayer
+
+	
+		listLayer->setScale(0.1f);
+
+		
+		
+		auto scaleTo = CCScaleTo::create(0.3f, 0.9f); 
+		auto easeBackOut = CCEaseBackOut::create(scaleTo);
+
+	
+		listLayer->runAction(easeBackOut);
+
+		addChild(listLayer,2);
+
+		scrollbar = Scrollbar::create(listView->m_tableView);
+
+		listView->m_tableView->setContentSize({ 415,190 });
+		scrollbar->setPosition({ (winSize.width / 2) + (listLayer->getScaledContentSize().width / 2) + 194, (winSize.height / 2)+5 });
+		
+
+		scrollbar->setScale(0.1f);
+		auto scaleTo2 = CCScaleTo::create(0.3f, 1.0f);
+		auto easeBackOut2 = CCEaseBackOut::create(scaleTo2);
+
+		reloadData();
+		scrollbar->runAction(easeBackOut2);
+		addChild(scrollbar,1);
+
+
+		return true;
+	}
+
+	void reloadData()
+	{
+		std::string dataURL;
+
+		dataURL = "https://raw.githubusercontent.com/iArtie/DarkModeV4-Index/refs/heads/main/texturepacks.json";
+
+
+
+
+		// List listener (Thanks minemaker0430)
+		m_listListener.bind([&](web::WebTask::Event* e) {
+			if (auto res = e->getValue()) {
+				if (res->ok()) {
+
+					// Unwrap the JSON into a matjson::Value object
+					matjson::Value jsonData = res->json().unwrapOrDefault();
+					Mod::get()->setSavedValue("cached-json", jsonData);
+
+					m_finishedLoading = true;
+
+				}
+				else if (e->isCancelled()) {
+					log::info("Cancelled request.");
+
+					m_finishedLoading = true;
+				}
 			}
+			});
+
+		// Make the list request
+		auto listReq = web::WebRequest();
+		m_listListener.setFilter(listReq.get(dataURL));
+
+		versions.clear();
+		auto jsonData = Mod::get()->getSavedValue<matjson::Value>("cached-json");
+		// Iterate through the modes
+		for (const auto& mode : modes) {
+
+			// Check if the mode exists in the JSON data
+			if (jsonData.contains(mode)) {
+				auto modeData = jsonData[mode];
+
+				// Check if the "Lastest" key exists and extract data
+				if (modeData["Lastest"].contains("version")) {
+					auto latestData = modeData["Lastest"];
+
+					// Extract version and download link
+					std::string version = latestData["version"].as<std::string>().unwrapOrDefault();
 
 
+					std::string downloadLink = latestData["download"].as<std::string>().unwrapOrDefault();
 
 
-			jsonString = res->json().unwrapOr("").dump();
+					// Save extracted data to persistent storage
+					Mod::get()->setSavedValue(mode + "_version", version);
+					Mod::get()->setSavedValue(mode + "_link", downloadLink);
 
-			// Vector de modos
-			std::vector<std::string> modes = {
-				"METAL", "BLOOD", "EARTH", "FIRE", "ICE",
-				"LAVA", "LIGHT", "MOON", "POISON", "SHADOW",
-				"SOUL", "STAR"
-			};
-
-			std::string empty = "empty";
-
-			std::string resultString;
-
-			for (const auto& mode : modes) {
-
-				std::string modeStr = "\"" + mode + "\"";
-				size_t modePos = jsonString.find(modeStr);
-
-				if (modePos != std::string::npos) {
-
-					size_t modeStartPos = jsonString.find("{", modePos);
-					size_t modeEndPos = jsonString.find("}", modeStartPos);
-
-					if (modeStartPos != std::string::npos && modeEndPos != std::string::npos) {
-						std::string modeContent = jsonString.substr(modeStartPos + 1, modeEndPos - modeStartPos - 1);
-
-
-						size_t latestPos = modeContent.find("\"Lastest\"");
-
-						if (latestPos != std::string::npos) {
-
-							size_t versionPos = modeContent.find("\"version\":", latestPos);
-							size_t downloadPos = modeContent.find("\"download\":", latestPos);
-
-							if (versionPos != std::string::npos && downloadPos != std::string::npos) {
-								size_t versionStart = modeContent.find("\"", versionPos + 11);
-								size_t versionEnd = modeContent.find("\"", versionStart + 1);
-								size_t downloadStart = modeContent.find("\"", downloadPos + 11);
-								size_t downloadEnd = modeContent.find("\"", downloadStart + 1);
-
-								if (versionStart != std::string::npos && versionEnd != std::string::npos &&
-									downloadStart != std::string::npos && downloadEnd != std::string::npos) {
-									std::string version = modeContent.substr(versionStart + 1, versionEnd - versionStart - 1);
-									std::string downloadLink = modeContent.substr(downloadStart + 1, downloadEnd - downloadStart - 1);
-
-									Mod::get()->setSavedValue(mode + "_version", version);
-									Mod::get()->setSavedValue(mode + "_link", downloadLink);
-
-								}
-							}
-						}
-						else {
-
-							Mod::get()->setSavedValue(mode + "_version", empty);
-							Mod::get()->setSavedValue(mode + "_link", empty);
-
-						}
+					// Add version to the versions list
+					if (version == "empty" || version.empty()) {
+						versions.push_back("not available");
 					}
 					else {
-
+						versions.push_back("v" + version);
 					}
 				}
 				else {
+					// If "Lastest" key is not found, set values to "empty"
+					Mod::get()->setSavedValue(mode + "_version", empty);
+					Mod::get()->setSavedValue(mode + "_link", empty);
+
+					// Add "not available" to versions list
+					versions.push_back("not available");
 				}
 			}
+			else {
+				// If the mode doesn't exist in the JSON, set values to "empty"
+				Mod::get()->setSavedValue(mode + "_version", empty);
+				Mod::get()->setSavedValue(mode + "_link", empty);
 
-			task = std::nullopt;
-			return *res;
-			});
-
-
-
-		std::vector<std::string> versions;
-
-
-		for (const auto& mode : modes) {
-
-			std::string versionKey = mode + "_version";
-			const char* versionKeyCStr = versionKey.c_str();
-
-
-			std::string version = Mod::get()->getSavedValue<std::string>(versionKeyCStr);
-		
-
-
-			if (version == "empty" || version.empty()) {
+				// Add "not available" to versions list
 				versions.push_back("not available");
 			}
-			else {
-				versions.push_back("v" + version);
-			}
 		}
+
+	}
+
+
+	void reloadDataCallBack(cocos2d::CCObject* sender)
+	{
+		reloadData();
+
+		auto director = CCDirector::sharedDirector();
+		auto winSize = director->getWinSize();
+		CCArray* texturepacks = CCArray::create();
+		const CCSize cellSize = { 415.0f, 72.0f };
 
 		for (int i = 0; i < 12; ++i) {
 
@@ -240,46 +287,22 @@ public:
 			texture->button->setID(modes[i].c_str());
 			texturepacks->addObject(texture);
 		}
+		listView = ListView::create(texturepacks, 72.0F, 410.0f, 200.0f);
+		listView->setID("list-view");
+		this->removeChild(scrollbar);
+
+		listLayer->removeChildByID("list-view");
+		listLayer->addChild(listView);
 
 
-		auto* listView = ListView::create(texturepacks, 72.0F, 410.0f, 200.0f);
-
-		auto listLayer = GJListLayer::create(listView, "", { 191, 114, 62, 255 }, 410.f, 200.f, 1);
+		listView->m_tableView->setContentSize({ 415,190 });
+		scrollbar = Scrollbar::create(listView->m_tableView);
 	
-		listLayer->setPosition(winSize / 2 - listLayer->getScaledContentSize() / 2 - ccp(0, 5)); //Center position sucks on GJListLayer
+		this->addChild(scrollbar,1);
+		scrollbar->setPosition({ (winSize.width / 2) + (listLayer->getScaledContentSize().width / 2) + 30, (winSize.height / 2) + 5 });
+		Notification::create("Index Updated!", CCSprite::createWithSpriteFrameName("GJ_completesIcon_001.png"))->show();
 
-	
-		listLayer->setScale(0.1f);
-
-		
-		
-		auto scaleTo = CCScaleTo::create(0.3f, 1.0f); 
-		auto easeBackOut = CCEaseBackOut::create(scaleTo);
-
-	
-		listLayer->runAction(easeBackOut);
-
-		addChild(listLayer);
-
-		auto scrollbar = Scrollbar::create(listView->m_tableView);
-
-		listView->m_tableView->setContentSize({ 415,200 });
-		scrollbar->setPosition({ (winSize.width / 2) + (listLayer->getScaledContentSize().width / 2) + 215, winSize.height / 2 });
-		
-
-		scrollbar->setScale(0.1f);
-		auto scaleTo2 = CCScaleTo::create(0.3f, 1.0f);
-		auto easeBackOut2 = CCEaseBackOut::create(scaleTo2);
-
-
-		scrollbar->runAction(easeBackOut2);
-		addChild(scrollbar);
-
-
-		return true;
 	}
-
-
 	static TexturePackSelector* create(std::string const& text) {
 		auto ret = new TexturePackSelector();
 
@@ -337,6 +360,11 @@ public:
 		{
 
 			Notification::create("Downloading...", CCSprite::createWithSpriteFrameName("GJ_timeIcon_001.png"))->show();
+			
+			if (std::filesystem::remove_all(fmt::format("{}/packs/{}", Loader::get()->getInstalledMod("geode.texture-loader")->getConfigDir(), id)))
+			{
+				std::filesystem::remove_all(fmt::format("{}/packs/{}", Loader::get()->getInstalledMod("geode.texture-loader")->getConfigDir(), id));
+			}; //delete old folder
 
 			m_downloadTP.bind([this, downloadLink, id](web::WebTask::Event* e) {
 				if (web::WebResponse* res = e->getValue()) {

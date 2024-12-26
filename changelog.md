@@ -1,6 +1,6 @@
 # DarkMode V4 Changelog
 
-## v1.0.6 (2024-12-24)
+## v1.0.6 (2024-12-25)
 - Big code optimization!
 - New texture pack selector thing!
 - macOS support!
