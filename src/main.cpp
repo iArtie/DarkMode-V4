@@ -4,6 +4,8 @@
 #include <Geode/modify/CCScale9Sprite.hpp>
 #include <Geode/modify/CCSprite.hpp>
 #include <Geode/modify/CCLayerColor.hpp>
+
+#include <Geode/modify/CCLayer.hpp>
 #include <Geode/modify/MenuGameLayer.hpp>
 #include <Geode/modify/LevelSearchLayer.hpp>
 #include <Geode/modify/LevelSelectLayer.hpp>
@@ -61,40 +63,49 @@ class $modify(GJListLayer) {
 
 };
 
-class $modify(CCSprite)
+
+class $modify(CCLayer)
 {
-	void draw()
-	{
-		auto currentScene = CCDirector::sharedDirector()->getRunningScene();
+
+	bool init() {
+		if (!CCLayer::init()) return false;
 		
+			queueInMainThread([=] {
+				auto currentScene = CCDirector::sharedDirector()->getRunningScene();
 
-		// NEW IDEA FOR CHANGE THE BACKGROUNDS COLOR
-		static const std::vector<std::pair<std::string, std::string>> layerBackgroundPairs = {
-			{"dankmeme.globed2/GlobedMenuLayer", "background"},
-			{"cvolton.betterinfo/DailyViewLayer", "cvolton.betterinfo/background"},
-			{"cvolton.betterinfo/CustomCreatorLayer", "cvolton.betterinfo/background"},
-			{"cvolton.betterinfo/LevelSearchViewLayer", "cvolton.betterinfo/background"},
-			{"cvolton.betterinfo/RewardGroupLayer", "cvolton.betterinfo/background"}
-		};
 
-	
-		for (const auto& [layerID, backgroundID] : layerBackgroundPairs) {
-			if (currentScene->getChildByID(layerID)) {
-				auto layer = static_cast<CCLayer*>(currentScene->getChildByID(layerID));
-				auto bg = static_cast<CCSprite*>(layer->getChildByID(backgroundID));
-				if (bg) {
-					bg->setColor({ 64, 64, 64 });
+				// NEW IDEA FOR CHANGE THE BACKGROUNDS COLOR
+				static const std::vector<std::pair<std::string, std::string>> layerBackgroundPairs = {
+					{"dankmeme.globed2/GlobedMenuLayer", "background"},
+					{"cvolton.betterinfo/DailyViewLayer", "cvolton.betterinfo/background"},
+					{"cvolton.betterinfo/CustomCreatorLayer", "cvolton.betterinfo/background"},
+					{"cvolton.betterinfo/LevelSearchViewLayer", "cvolton.betterinfo/background"},
+					{"cvolton.betterinfo/RewardGroupLayer", "cvolton.betterinfo/background"}
+				};
+
+
+				for (const auto& [layerID, backgroundID] : layerBackgroundPairs) {
+					if (this->getID() == layerID) {
+					
+						auto bg = static_cast<CCSprite*>(this->getChildByID(backgroundID));
+						if (bg) {
+							bg->setColor({ 64, 64, 64 });
+						}
+					}
 				}
-			}
-		}
-		CCSprite::draw();
+
+				});
+		
+		return true;
 	}
 };
 
 
 class $modify(CCLayerColor)
 {
-	void draw()
+
+
+	void draw() //Idk why but init doesnt work
 	{
 //new code of something stuff
 		static const std::map<ccColor3B, ccColor3B, ColorComparator> colorMap = {
@@ -129,8 +140,8 @@ class $modify(CCLayerColor)
 
 class $modify(CCScale9Sprite)
 {
-
-	void visit()
+		
+	void visit() //init doesnt work with this too
 	{
 		//new code of something stuff
 		static const std::map<ccColor3B, ccColor3B, ColorComparator> colorMap = {
