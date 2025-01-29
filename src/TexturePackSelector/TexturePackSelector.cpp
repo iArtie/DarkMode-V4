@@ -7,67 +7,6 @@
 
 using namespace geode::prelude;
 
-// small wrapper with precalculated sizes to make ui easier
-struct PopupLayout {
-	cocos2d::CCSize winSize, popupSize;
-	float left, right, bottom, top;
-
-	cocos2d::CCSize center, centerLeft, centerTop, centerRight, centerBottom;
-	cocos2d::CCSize bottomLeft, topLeft, bottomRight, topRight;
-
-	cocos2d::CCPoint fromTop(float y);
-	cocos2d::CCPoint fromTop(cocos2d::CCSize off);
-
-	cocos2d::CCPoint fromBottom(float y);
-	cocos2d::CCPoint fromBottom(cocos2d::CCSize off);
-
-	cocos2d::CCPoint fromCenter(cocos2d::CCSize off);
-	cocos2d::CCPoint fromCenter(float x, float y);
-
-	cocos2d::CCPoint fromBottomRight(cocos2d::CCSize off);
-	cocos2d::CCPoint fromBottomRight(float x, float y);
-
-	cocos2d::CCPoint fromTopRight(cocos2d::CCSize off);
-	cocos2d::CCPoint fromTopRight(float x, float y);
-
-	cocos2d::CCPoint fromBottomLeft(cocos2d::CCSize off);
-	cocos2d::CCPoint fromBottomLeft(float x, float y);
-
-	cocos2d::CCPoint fromTopLeft(cocos2d::CCSize off);
-	cocos2d::CCPoint fromTopLeft(float x, float y);
-};
-
-static PopupLayout popupLayoutWith(const CCSize& popupSize, bool useWinSize) {
-	PopupLayout layout;
-
-	layout.winSize = CCDirector::get()->getWinSize();
-	layout.popupSize = popupSize;
-
-	if (useWinSize) {
-		layout.center = CCSize{ layout.winSize.width / 2, layout.winSize.height / 2 };
-	}
-	else {
-		layout.center = CCSize{ layout.popupSize.width / 2, layout.popupSize.height / 2 };
-	}
-
-	layout.left = layout.center.width - popupSize.width / 2;
-	layout.bottom = layout.center.height - popupSize.height / 2;
-	layout.right = layout.center.width + popupSize.width / 2;
-	layout.top = layout.center.height + popupSize.height / 2;
-
-	layout.centerLeft = CCSize{ layout.left, layout.center.height };
-	layout.centerRight = CCSize{ layout.right, layout.center.height };
-	layout.centerTop = CCSize{ layout.center.width, layout.top };
-	layout.centerBottom = CCSize{ layout.center.width, layout.bottom };
-
-	layout.bottomLeft = CCSize{ layout.left, layout.bottom };
-	layout.topLeft = CCSize{ layout.left, layout.top };
-	layout.bottomRight = CCSize{ layout.right, layout.bottom };
-	layout.topRight = CCSize{ layout.right, layout.top };
-
-	return layout;
-}
-
 class TexturePackSelector : public geode::Popup<std::string const&> {
 protected:
 
@@ -102,14 +41,32 @@ protected:
 	bool m_finishedLoading = false;
 
 public:
+
+	bool init() {
+		if (!CCLayer::init()) {
+			return false;
+		}
+
+		// Llamar a reloadData() cuando se inicializa la pantalla
+		reloadData();
+
+		return true;
+	}
+
 	bool setup(std::string const& value) {
 
 		this->setTitle("DarkMode TexturePack selector");
 
+		
+		this->runAction(CCSequence::create(
+			CCCallFunc::create(this, callfunc_selector(TexturePackSelector::reloadData)), // Utilizamos CCCallFunc para llamar a la función runParticle
+			nullptr
+		));
 		auto director = CCDirector::sharedDirector();
 		auto winSize = director->getWinSize();
 		CCArray* texturepacks = CCArray::create();
 
+	
 
 		reloadData();
 
@@ -166,6 +123,8 @@ public:
 		
 
 		scrollbar->setScale(0.1f);
+
+	
 		auto scaleTo2 = CCScaleTo::create(0.3f, 1.0f);
 		auto easeBackOut2 = CCEaseBackOut::create(scaleTo2);
 

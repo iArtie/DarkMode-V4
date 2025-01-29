@@ -1,5 +1,10 @@
 # DarkMode V4 Changelog
 
+## v1.0.7 (2025-01-29)
+- No need to press the reload button to see available texture packs on first login!
+- Reload textures crash fix!
+- New setting for disable the texturepacks selector button in main menu!
+
 ## v1.0.6 (2024-12-25)
 - Big code optimization!
 - New texture pack selector thing!

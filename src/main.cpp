@@ -36,15 +36,26 @@ struct ColorComparator {
 void updateGroundColorM(CCSpriteBatchNode* batch, const cocos2d::ccColor3B& color)
 {
 	
-		for (int i = 0; i < batch->getChildren()->count(); ++i) {
-			auto sprite = (CCSprite*)batch->getChildren()->objectAtIndex(i);
-			sprite->setColor(color);
-			for (int o = 0; o < sprite->getChildren()->count(); ++o) {
-				auto spriteChild = (CCSprite*)sprite->getChildren()->objectAtIndex(o);
-				spriteChild->setColor(color);
-			}
+	if (!batch) return;
+	auto children = batch->getChildren();
+	if (!children) return;
+
+	for (int i = 0; i < children->count(); ++i) {
+		auto sprite = dynamic_cast<CCSprite*>(children->objectAtIndex(i));
+		if (!sprite) continue;
+
+		sprite->setColor(color);
+
+		auto spriteChildren = sprite->getChildren();
+		if (!spriteChildren) continue;
+
+		for (int o = 0; o < spriteChildren->count(); ++o) {
+			auto spriteChild = dynamic_cast<CCSprite*>(spriteChildren->objectAtIndex(o));
+			if (!spriteChild) continue;
+
+			spriteChild->setColor(color);
 		}
-	
+	}
 }
 
 class $modify(GJListLayer) {
@@ -70,32 +81,35 @@ class $modify(AppDelegate)
 	{
 		AppDelegate::willSwitchToScene(scene);
 
-
-		if (scene->getChildrenCount() > 0)
+		if (scene)
 		{
-			if (auto layer = as<CCLayer*>(scene->getChildren()->objectAtIndex(0)); layer->getChildrenCount() > 0)
+			if (scene->getChildrenCount() > 0)
 			{
-				if (scene->getChildByType<LevelEditorLayer>(0) || scene->getChildByType<LoadingLayer>(0))
-					return;
-
-				layer->sortAllChildren();
-
-				if (auto sprite = typeinfo_cast<CCSprite*>(layer->getChildren()->objectAtIndex(0)))
+				if (auto layer = as<CCLayer*>(scene->getChildren()->objectAtIndex(0)); layer->getChildrenCount() > 0)
 				{
-					ccColor3B spriteColor = sprite->getColor();
+					if (scene->getChildByType<LevelEditorLayer>(0) || scene->getChildByType<LoadingLayer>(0))
+						return;
 
-				
-					if ((spriteColor.r == 164 && spriteColor.g == 0 && spriteColor.b == 255) || //for betterinfo
-						(spriteColor.r == 37 && spriteColor.g == 50 && spriteColor.b == 167) || //for globed
-						spriteColor == ccc3(255, 255, 255))
+					layer->sortAllChildren();
+
+					if (auto sprite = typeinfo_cast<CCSprite*>(layer->getChildren()->objectAtIndex(0)))
 					{
-						sprite->setColor({ 64, 64, 64 });
+						ccColor3B spriteColor = sprite->getColor();
+
+
+						if ((spriteColor.r == 164 && spriteColor.g == 0 && spriteColor.b == 255) || //for betterinfo
+							(spriteColor.r == 37 && spriteColor.g == 50 && spriteColor.b == 167) || //for globed
+							spriteColor == ccc3(255, 255, 255))
+						{
+							sprite->setColor({ 64, 64, 64 });
+						}
 					}
 				}
 			}
-		}
 
+		}
 	}
+		
 };
 
 class $modify(CCLayerColor)
@@ -267,9 +281,7 @@ class $modify(LevelSearchLayer)
 	{
 		if (!LevelSearchLayer::init(a1)) return false;
 
-		auto bar = (CCTextInputNode*)this->getChildByID("search-bar");
-		bar->setLabelNormalColor({ 255,255,255 });
-
+		this->m_searchInput->setLabelNormalColor({ 255,255,255 });
 		return true;
 	}
 };
@@ -298,14 +310,31 @@ class $modify(DarkModeMenuLayer,MenuLayer)
 		menu_selector(DarkModeMenuLayer::onMyButton)
 		);
 
+		
 		auto menu = this->getChildByID("bottom-menu");
-		menu->addChild(myButton);
-			
-		myButton->setID("TexturePackSelector"_spr);
-			
-		menu->updateLayout();
+
+		if (Mod::get()->getSettingValue<bool>("Disable-selector-button") == false)
+		{
+			menu->addChild(myButton);
+
+			myButton->setID("TexturePackSelector"_spr);
+
+			menu->updateLayout();
+		}
+	
 	
 	
 		return true;
 	}
 };
+
+
+$execute{
+
+	Loader::get()->queueInMainThread([] {
+	auto selector = TexturePackSelector::create("");  
+		if (selector) {
+			selector->reloadData(); //to check tps on start!
+		}
+	});
+}
