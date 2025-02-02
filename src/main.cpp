@@ -5,7 +5,7 @@
 #include <Geode/modify/CCSprite.hpp>
 #include <Geode/modify/CCLayerColor.hpp>
 
-#include <Geode/modify/AppDelegate.hpp>
+
 #include <Geode/modify/MenuGameLayer.hpp>
 #include <Geode/modify/LevelSearchLayer.hpp>
 #include <Geode/modify/LevelSelectLayer.hpp>
@@ -73,6 +73,9 @@ class $modify(GJListLayer) {
 
 
 };
+
+
+#include <Geode/modify/AppDelegate.hpp>
 
 class $modify(AppDelegate)
 
@@ -327,14 +330,3 @@ class $modify(DarkModeMenuLayer,MenuLayer)
 		return true;
 	}
 };
-
-
-$execute{
-
-	Loader::get()->queueInMainThread([] {
-	auto selector = TexturePackSelector::create("");  
-		if (selector) {
-			selector->reloadData(); //to check tps on start!
-		}
-	});
-}

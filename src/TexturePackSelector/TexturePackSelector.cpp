@@ -59,6 +59,7 @@ public:
 
 		
 		this->runAction(CCSequence::create(
+			CCDelayTime::create(1.5),
 			CCCallFunc::create(this, callfunc_selector(TexturePackSelector::reloadData)), // Utilizamos CCCallFunc para llamar a la función runParticle
 			nullptr
 		));
@@ -66,9 +67,22 @@ public:
 		auto winSize = director->getWinSize();
 		CCArray* texturepacks = CCArray::create();
 
-	
-
+		
 		reloadData();
+	
+		auto loadingCircle = LoadingCircle::create();
+		
+		loadingCircle->setParentLayer(this);
+		loadingCircle->show();
+
+		loadingCircle->setID("selector-loading-circle");
+		this->runAction(CCSequence::create(
+			CCDelayTime::create(1.0f), 
+			CCCallFunc::create(this, callfunc_selector(TexturePackSelector::loadEnter)),
+			nullptr
+		));
+
+		
 
 		const CCSize cellSize = { 415.0f, 72.0f };
 	
@@ -131,7 +145,9 @@ public:
 		reloadData();
 		scrollbar->runAction(easeBackOut2);
 		addChild(scrollbar,1);
+		this->removeChild(scrollbar);
 
+		listLayer->removeChildByID("list-view"); 
 
 		return true;
 	}
@@ -222,7 +238,51 @@ public:
 
 	}
 
+	void loadEnter()
+	{
+		reloadData();
 
+		auto director = CCDirector::sharedDirector();
+		auto winSize = director->getWinSize();
+		CCArray* texturepacks = CCArray::create();
+		const CCSize cellSize = { 415.0f, 72.0f };
+
+		for (int i = 0; i < 12; ++i) {
+
+			auto texture = TexturePackCell::create({
+					cellSize,
+					(imageNames[i]).c_str(),
+					modes[i].c_str(),
+					versions[i].c_str(),
+					this,
+					menu_selector(TexturePackSelector::onSelectTP)
+				});
+
+			texture->button->setID(modes[i].c_str());
+			texturepacks->addObject(texture);
+		}
+		listView = ListView::create(texturepacks, 72.0F, 410.0f, 200.0f);
+		listView->setID("list-view");
+		/*this->removeChild(scrollbar);
+
+		listLayer->removeChildByID("list-view");*/
+
+
+		
+		listLayer->addChild(listView);
+
+
+		listView->m_tableView->setContentSize({ 415,190 });
+		scrollbar = Scrollbar::create(listView->m_tableView);
+
+
+		this->removeChildByID("selector-loading-circle");
+
+		this->addChild(scrollbar, 1);
+		scrollbar->setPosition({ (winSize.width / 2) + (listLayer->getScaledContentSize().width / 2) + 30, (winSize.height / 2) + 5 });
+		Notification::create("Index Updated!", CCSprite::createWithSpriteFrameName("GJ_completesIcon_001.png"))->show();
+
+	}
 	void reloadDataCallBack(cocos2d::CCObject* sender)
 	{
 		reloadData();
@@ -297,6 +357,11 @@ public:
 
 
 	}
+
+	//static TexturePackSelector* getInstance() {
+	//	static auto instance = TexturePackSelector::create("some_text");
+	//	return instance;
+	//}
 
 	void onDownloadTP(std::string id)
 	{

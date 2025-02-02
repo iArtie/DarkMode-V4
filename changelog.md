@@ -1,5 +1,8 @@
 # DarkMode V4 Changelog
 
+## v1.0.71 (2025-02-02)
+- Editor issues fixed! 
+
 ## v1.0.7 (2025-01-29)
 - No need to press the reload button to see available texture packs on first login!
 - Reload textures crash fix!
