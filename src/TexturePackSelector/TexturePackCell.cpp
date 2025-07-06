@@ -110,7 +110,7 @@ CCNode* TexturePackCell::createTitle(char const* frame) {
 CCNode* TexturePackCell::createVersion(char const* frame) {
     const CCSize container = getContentSize();
 
-    auto versionLabel = CCLabelBMFont::create(frame, "DMFont.fnt"_spr);
+    auto versionLabel = CCLabelBMFont::create(frame, "goldFont.fnt");
     versionLabel->setAnchorPoint({ 0.0f, 0.5f });
     versionLabel->setScale(0.5f);
 
@@ -190,7 +190,7 @@ CCNode* TexturePackCell::createViewButton(
         container.height / 2.0f
     });
     menu->setScale(0.6f);
-    auto viewButtonSpr = ButtonSprite::create("Get","DMFont.fnt"_spr,"DM_button_01.png"_spr, 2);
+    auto viewButtonSpr = ButtonSprite::create("Get","goldFont.fnt","DM_button_01.png"_spr, 2);
     viewButtonSpr->setScale(1.7);
    
     button = CCMenuItemSpriteExtra::create(
