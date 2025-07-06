@@ -399,12 +399,7 @@ void TexturePackSelector::reloadDataCallBack(CCObject* sender)
 
     m_mainList->m_contentLayer->setContentHeight(m_mainList->getContentHeight());
     m_mainList->m_contentLayer->updateLayout();
-    m_mainList->moveToTop();
-    /*this->removeChild(scrollbar);
-
-    listLayer->removeChildByID("list-view");*/
-
-
+    m_mainList->moveToTop(); 
 
     this->removeChildByID("selector-loading-circle");
 
@@ -448,7 +443,7 @@ void TexturePackSelector::reloadData()
     std::unordered_set<std::string> knownSet(knownVariants.begin(), knownVariants.end());
     std::vector<std::string> newKnownVariants = knownVariants;
 
-    std::string currentPack = Mod::get()->getSavedValue<std::string>("current-pack");
+   /* std::string currentPack = Mod::get()->getSavedValue<std::string>("current-pack");*/
 
     for (const auto& mode : modes) {
         if (jsonData.contains(mode)) {
@@ -470,20 +465,29 @@ void TexturePackSelector::reloadData()
                         versions.push_back("New!");
                         newKnownVariants.push_back(mode);
                     }
-                    else if (mode == currentPack) {
+                    else {
                         std::string installedVersion = Mod::get()->getSavedValue<std::string>(mode + "_installed_version");
 
-                        if (installedVersion.empty() || installedVersion != version) {
-                            versions.push_back("Update!");
-                        }
-                        else {
+						std::cout << "Installed version for " << mode << ": " << installedVersion << std::endl;
+
+						std::cout << "Current version for " << mode << ": " << version << std::endl;
+                        if (installedVersion.empty())
+                        {
                             versions.push_back("v" + version);
                         }
+                        else
+                        {
+                            if (installedVersion != version) {
+                                versions.push_back("Update!");
+                            }
+                            else
+                            {
+                                versions.push_back("v" + version);
+                            }
+                        }
+                       
                     }
-                    else {
-                        versions.push_back("v" + version);
-                    }
-
+      
                     availableCount++;
                 }
             }

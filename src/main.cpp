@@ -225,7 +225,7 @@ class $modify(MenuGameLayer)
 				auto m_pGround02Sprite = static_cast<CCSpriteBatchNode*>(ground->getChildByID("ground-sprites-2"));
 
 
-				CCArray* children = nullptr;  // Inicializamos children a nullptr
+				CCArray* children = nullptr;  
 
 				for (int i = 0; i < m_pGround01Sprite->getChildren()->count(); ++i) {
 					if (m_pGround01Sprite != nullptr) {
