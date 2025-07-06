@@ -262,7 +262,7 @@ void TexturePackSelector::loadEnter()
 
         
     
-        m_statusBG = CCScale9Sprite::create("square02b_small-uhd.png");
+        m_statusBG = CCScale9Sprite::create("square02b_small.png");
 		m_statusBG->setColor({ 0, 0, 0 });
 		m_statusBG->setOpacity(150);
         m_statusBG->setContentSize({ 200, 20 });
