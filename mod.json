@@ -1,11 +1,11 @@
 {
-	"geode": "4.2.0",
+	"geode": "4.6.3",
 	"gd": {
 		"android": "2.2074",
 		"win": "2.2074",
 		"mac": "2.2074"
 	},
-	"version": "v1.0.71",
+	"version": "v2.0.0",
 	"id": "bitz.darkmode_v4",
 	"name": "DarkMode V4",
 	"developers": [ "BitZ", "GhostPower13" ],
@@ -27,8 +27,14 @@
 			"description": "This hide the selector button from the menu",
 			"type": "bool",
 			"default": false
+		},
+		"transparent-lists": {
+			"name": "Transparent lists",
+			"description": "This make every list transparent",
+			"type": "bool",
+			"default": false
 		}
-	
+
 	},
 	"resources": {
 
@@ -37,8 +43,12 @@
 				"resources/icon/*.png"
 			]
 
-		}
+		},
+		"files": [
+			"resources/*.png",
+            "resources/*.fnt"
 
+		]
 	},
 	"tags": [
 		"customization",

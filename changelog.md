@@ -1,5 +1,8 @@
 # DarkMode V4 Changelog
 
+## v2.0.0 
+- Transparent lists option added!
+
 ## v1.0.71 (2025-02-02)
 - Editor issues fixed! 
 

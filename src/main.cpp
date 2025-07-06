@@ -4,15 +4,15 @@
 #include <Geode/modify/CCScale9Sprite.hpp>
 #include <Geode/modify/CCSprite.hpp>
 #include <Geode/modify/CCLayerColor.hpp>
-
+#include <Geode/ui/GeodeUI.hpp>
 
 #include <Geode/modify/MenuGameLayer.hpp>
 #include <Geode/modify/LevelSearchLayer.hpp>
 #include <Geode/modify/LevelSelectLayer.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
-#include "TexturePackSelector/TexturePackCell.hpp"
-#include "TexturePackSelector/TexturePackCell.cpp"
+
 #include <Geode/utils/web.hpp>
+#include "TexturePackSelector/TexturePackSelector.hpp"
 #include "TexturePackSelector/TexturePackSelector.cpp"
 
 using namespace geode::prelude;
@@ -146,7 +146,30 @@ class $modify(CCLayerColor)
 		if (it != colorMap.end()) {
 			this->setColor(it->second);
 		}
-		
+	
+		//Option for transparent lists
+		if (Mod::get()->getSettingValue<bool>("transparent-lists") && this->getOpacity() != 10) {
+			auto parent = this->getParent();
+			auto loadingCircle = parent ? parent->getChildByType<LoadingCircle*>(0) : nullptr;
+
+			if (typeinfo_cast<LevelCell*>(parent) || typeinfo_cast<GJScoreCell*>(parent) ||
+				typeinfo_cast<LevelListCell*>(parent) || typeinfo_cast<MapPackCell*>(parent) ||
+				(typeinfo_cast<GJListLayer*>(this) &&
+					(this->getChildByID("list-view") != nullptr || (loadingCircle && loadingCircle->isVisible())))) {
+
+				if (typeinfo_cast<DailyLevelNode*>(parent->getParent())) {
+					this->setVisible(this->getContentSize().height == 90 && this->getContentSize().width == 160);
+				}
+
+				this->setColor(this->getColor() == ccColor3B{ 48, 48, 48 } ? ccColor3B{ 0, 0, 0 } : ccColor3B{ 255, 255, 255 });
+				this->setOpacity(10);
+			}
+		}
+
+
+
+
+
 		CCLayerColor::draw();
 	}
 };
@@ -292,12 +315,6 @@ class $modify(LevelSearchLayer)
 class $modify(DarkModeMenuLayer,MenuLayer)
 {
 
-	void onMyButton(CCObject * target) {
-	
-		auto awa = TexturePackSelector::create("");
-		awa->show();
-	}
-
 	bool init()
 	{
 		if (!MenuLayer::init()) return false;
@@ -310,7 +327,7 @@ class $modify(DarkModeMenuLayer,MenuLayer)
 		auto myButton = CCMenuItemSpriteExtra::create(
 		darkmodeIcon,
 		this,
-		menu_selector(DarkModeMenuLayer::onMyButton)
+		menu_selector(DarkModeMenuLayer::onDarkomodeButton)
 		);
 
 		
@@ -328,5 +345,16 @@ class $modify(DarkModeMenuLayer,MenuLayer)
 	
 	
 		return true;
+	}
+
+
+	void onDarkomodeButton(CCObject*) {
+
+		TexturePackSelector::create()->show();
+		/*auto awa = ;
+		awa->show();*/
+
+		/*geode::openModsList();*/
+
 	}
 };
