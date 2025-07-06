@@ -282,7 +282,7 @@ void TexturePackSelector::loadEnter()
         m_mainLayer->addChild(m_progressBar);
 
 
-		//m_mainList->m_contentLayer->removeAllChildrenWithCleanup(true);
+        m_mainList->m_contentLayer->removeAllChildrenWithCleanup(true);
 
         m_mainList = ScrollLayer::create(LAYER_SIZE * scale);
 
