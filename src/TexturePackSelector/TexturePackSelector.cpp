@@ -139,6 +139,7 @@ bool TexturePackSelector::init()
     this->runAction(CCSequence::create(
          	CCDelayTime::create(1.0f), 
 			CCCallFunc::create(this, callfunc_selector(TexturePackSelector::loadEnter)),
+            CCCallFunc::create(this, callfunc_selector(TexturePackSelector::showSuccessNotification)),
 			nullptr
     ));
 
@@ -244,6 +245,11 @@ geode::createQuickPopup(
 
 
 }
+
+void TexturePackSelector::showSuccessNotification() {
+    Notification::create("Index Updated!", CCSprite::createWithSpriteFrameName("GJ_completesIcon_001.png"))->show();
+}
+
 void TexturePackSelector::loadEnter()
 {
 		TexturePackSelector::reloadData();
@@ -328,8 +334,6 @@ void TexturePackSelector::loadEnter()
 		this->removeChildByID("selector-loading-circle");
 
         reloadBtn->setVisible(true);
-		Notification::create("Index Updated!", CCSprite::createWithSpriteFrameName("GJ_completesIcon_001.png"))->show();
-
 }
 
 void TexturePackSelector::reloadDataCallBack(CCObject* sender)

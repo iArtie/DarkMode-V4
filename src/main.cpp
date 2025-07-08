@@ -215,12 +215,11 @@ class $modify(CCLayerColor)
 };
 
 
-class $modify(CCScale9Sprite)
+class $modify(DMScale9Sprite, CCScale9Sprite)
 {
-		
-	void visit() //init doesnt work with this too
+	void visit()
 	{
-		//new code of something stuff
+		// new code of something stuff
 		static const std::map<ccColor3B, ccColor3B, ColorComparator> colorMap = {
 			{{0, 56, 141}, {20, 20, 20}},
 			{{130, 64, 33}, {20, 20, 20}},
@@ -230,16 +229,20 @@ class $modify(CCScale9Sprite)
 			{{123, 60, 31}, {15, 15, 15}},
 			{{108, 60, 36}, {15, 15, 15}},
 			{{0, 39, 98}, {10, 10, 10}},
-			{{76,42,25},{25,25,25}}
+			{{76, 42, 25}, {25, 25, 25}},
+			{{130,64,32},{20,20,20}}
 		};
 
 		auto it = colorMap.find(this->getColor());
 		if (it != colorMap.end()) {
 			this->setColor(it->second);
 		}
+
+		
 		CCScale9Sprite::visit();
 	}
 };
+
 
 class $modify(MenuGameLayer)
 {

@@ -57,4 +57,5 @@ public:
 	void onSelectTP(CCObject* sender);
 	void onDownloadTP(std::string id);
 	void onBack(CCObject* sender);
+	void showSuccessNotification();
 };
