@@ -103,7 +103,7 @@ void onSceneSwitch(CCScene * scene) {
 class $modify(AppDelegate)
 
 {
-#ifndef GEODE_IS_IOS
+	#ifndef GEODE_IS_IOS
 	virtual void willSwitchToScene(CCScene * scene)
 	{
 		AppDelegate::willSwitchToScene(scene);
@@ -113,11 +113,13 @@ class $modify(AppDelegate)
 };
 
 class $modify(DMAchievementNotifier, AchievementNotifier) {
+	#ifdef GEODE_IS_IOS
 	void willSwitchToScene(CCScene * scene) {
 		AchievementNotifier::willSwitchToScene(scene);
 		onSceneSwitch(scene);
 	}
-}
+	#endif
+};
 
 template <typename T>
 class GlobedListCell : public cocos2d::CCLayer, public T {}; //List cell recreate for globed cells
