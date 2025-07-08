@@ -11,6 +11,7 @@
 #include <Geode/modify/LevelSelectLayer.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/modify/AppDelegate.hpp>
+#include <Geode/modify/AchievementNotifier.hpp>
 #include "TexturePackSelector/TexturePackSelector.hpp"
 #include "TexturePackSelector/TexturePackSelector.cpp"
 
