@@ -21,8 +21,8 @@ Mod made for GhostPower's "DarkMode V4" texture pack
 Personaliza el juego para que el modo oscuro llegue donde el texture pack no puede llegar
 
 ## Novedades!
-- Nuevo rediseño de la interfaz para seleccionar tu texture pack!
-- Añadida la opción de listas transparentes!
+- Nuevo redesign de la interfaz para seleccionar tu texture pack!
+- Se agrego la opcion de listas transparentes!
 - Soporte para iOS!
 
 Mod hecho para el texture pack "DarkMode V4" de GhostPower
