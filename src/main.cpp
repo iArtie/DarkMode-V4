@@ -11,6 +11,7 @@
 #include <Geode/modify/LevelSelectLayer.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/modify/AppDelegate.hpp>
+#include <Geode/modify/AchievementNotifier.hpp>
 #include "TexturePackSelector/TexturePackSelector.hpp"
 #include "TexturePackSelector/TexturePackSelector.cpp"
 
@@ -70,43 +71,55 @@ class $modify(GJListLayer) {
 
 };
 
-class $modify(AppDelegate)
-
-{
-	virtual void willSwitchToScene(CCScene * scene)
+void onSceneSwitch(CCScene * scene) {
+	if (scene)
 	{
-		AppDelegate::willSwitchToScene(scene);
-
-		if (scene)
+		if (scene->getChildrenCount() > 0)
 		{
-			if (scene->getChildrenCount() > 0)
+			if (auto layer = as<CCLayer*>(scene->getChildren()->objectAtIndex(0)); layer->getChildrenCount() > 0)
 			{
-				if (auto layer = as<CCLayer*>(scene->getChildren()->objectAtIndex(0)); layer->getChildrenCount() > 0)
+				if (scene->getChildByType<LevelEditorLayer>(0) || scene->getChildByType<LoadingLayer>(0))
+					return;
+
+				layer->sortAllChildren();
+
+				if (auto sprite = typeinfo_cast<CCSprite*>(layer->getChildren()->objectAtIndex(0)))
 				{
-					if (scene->getChildByType<LevelEditorLayer>(0) || scene->getChildByType<LoadingLayer>(0))
-						return;
+					ccColor3B spriteColor = sprite->getColor();
 
-					layer->sortAllChildren();
 
-					if (auto sprite = typeinfo_cast<CCSprite*>(layer->getChildren()->objectAtIndex(0)))
+					if ((spriteColor.r == 164 && spriteColor.g == 0 && spriteColor.b == 255) || //for betterinfo
+						(spriteColor.r == 37 && spriteColor.g == 50 && spriteColor.b == 167) || //for globed
+						(spriteColor.r == 0 && spriteColor.g == 101 && spriteColor.b == 253) || //for gdutils
+						spriteColor == ccc3(255, 255, 255))
 					{
-						ccColor3B spriteColor = sprite->getColor();
-
-
-						if ((spriteColor.r == 164 && spriteColor.g == 0 && spriteColor.b == 255) || //for betterinfo
-							(spriteColor.r == 37 && spriteColor.g == 50 && spriteColor.b == 167) || //for globed
-							(spriteColor.r == 0 && spriteColor.g == 101 && spriteColor.b == 253) || //for gdutils
-							spriteColor == ccc3(255, 255, 255))
-						{
-							sprite->setColor({ 64, 64, 64 });
-						}
+						sprite->setColor({ 64, 64, 64 });
 					}
 				}
 			}
-
 		}
 	}
-		
+}
+
+class $modify(AppDelegate)
+
+{
+	#ifndef GEODE_IS_IOS
+	virtual void willSwitchToScene(CCScene * scene)
+	{
+		AppDelegate::willSwitchToScene(scene);
+		onSceneSwitch(scene);
+		}
+	#endif
+};
+
+class $modify(DMAchievementNotifier, AchievementNotifier) {
+	#ifdef GEODE_IS_IOS
+	void willSwitchToScene(CCScene * scene) {
+		AchievementNotifier::willSwitchToScene(scene);
+		onSceneSwitch(scene);
+	}
+	#endif
 };
 
 template <typename T>
