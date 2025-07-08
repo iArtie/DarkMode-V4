@@ -1,6 +1,6 @@
 # DarkMode V4 Changelog
 
-## v2.0.0 (07-06-2025)
+## v2.0.0 (07-07-2025)
 - Transparent lists option added!
 - TEXTURE PACK SELECTOR REWORKED!
 - Progress bar on texture pack selector!

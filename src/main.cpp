@@ -1,17 +1,16 @@
+#include <map>
+#include <tuple>
 #include <Geode/Geode.hpp>
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/GJListLayer.hpp>
 #include <Geode/modify/CCScale9Sprite.hpp>
 #include <Geode/modify/CCSprite.hpp>
 #include <Geode/modify/CCLayerColor.hpp>
-#include <Geode/ui/GeodeUI.hpp>
-
 #include <Geode/modify/MenuGameLayer.hpp>
 #include <Geode/modify/LevelSearchLayer.hpp>
 #include <Geode/modify/LevelSelectLayer.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
-
-#include <Geode/utils/web.hpp>
+#include <Geode/modify/AppDelegate.hpp>
 #include "TexturePackSelector/TexturePackSelector.hpp"
 #include "TexturePackSelector/TexturePackSelector.cpp"
 
@@ -22,11 +21,8 @@ inline bool instanceof(const T* ptr) {
 	return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
-#include <map>
-#include <tuple>
 
 
-// Comparador externo para ccColor3B
 struct ColorComparator {
 	bool operator()(const ccColor3B& lhs, const ccColor3B& rhs) const {
 		return std::tie(lhs.r, lhs.g, lhs.b) < std::tie(rhs.r, rhs.g, rhs.b);
@@ -74,9 +70,6 @@ class $modify(GJListLayer) {
 
 };
 
-
-#include <Geode/modify/AppDelegate.hpp>
-
 class $modify(AppDelegate)
 
 {
@@ -102,6 +95,7 @@ class $modify(AppDelegate)
 
 						if ((spriteColor.r == 164 && spriteColor.g == 0 && spriteColor.b == 255) || //for betterinfo
 							(spriteColor.r == 37 && spriteColor.g == 50 && spriteColor.b == 167) || //for globed
+							(spriteColor.r == 0 && spriteColor.g == 101 && spriteColor.b == 253) || //for gdutils
 							spriteColor == ccc3(255, 255, 255))
 						{
 							sprite->setColor({ 64, 64, 64 });
@@ -114,6 +108,10 @@ class $modify(AppDelegate)
 	}
 		
 };
+
+template <typename T>
+class GlobedListCell : public cocos2d::CCLayer, public T {}; //List cell recreate for globed cells
+
 
 class $modify(CCLayerColor)
 {
@@ -147,27 +145,56 @@ class $modify(CCLayerColor)
 			this->setColor(it->second);
 		}
 	
-		//Option for transparent lists
+		// Option for transparent lists
 		if (Mod::get()->getSettingValue<bool>("transparent-lists") && this->getOpacity() != 10) {
 			auto parent = this->getParent();
+			auto grandparent = parent ? parent->getParent() : nullptr;
 			auto loadingCircle = parent ? parent->getChildByType<LoadingCircle*>(0) : nullptr;
 
-			if (typeinfo_cast<LevelCell*>(parent) || typeinfo_cast<GJScoreCell*>(parent) ||
-				typeinfo_cast<LevelListCell*>(parent) || typeinfo_cast<MapPackCell*>(parent) ||
-				(typeinfo_cast<GJListLayer*>(this) &&
-					(this->getChildByID("list-view") != nullptr || (loadingCircle && loadingCircle->isVisible())))) {
+			auto currentColor = this->getColor();
 
-				if (typeinfo_cast<DailyLevelNode*>(parent->getParent())) {
-					this->setVisible(this->getContentSize().height == 90 && this->getContentSize().width == 160);
+			bool isValidCell =
+				typeinfo_cast<LevelCell*>(parent) ||
+				typeinfo_cast<GJScoreCell*>(parent) ||
+				typeinfo_cast<LevelListCell*>(parent) ||
+				typeinfo_cast<MapPackCell*>(parent) ||
+				dynamic_cast<geode::GenericListCell*>(parent) != nullptr;
+
+			// For yellow color in list
+			if (typeinfo_cast<GlobedListCell<cocos2d::CCNode>*>(parent) != nullptr &&
+				currentColor == ccColor3B{ 90, 90, 90 }) {
+				isValidCell = true;
+			}
+
+			bool isListLayer = typeinfo_cast<GJListLayer*>(this);
+			bool hasListView = this->getChildByID("list-view") != nullptr;
+
+			bool hasVisibleLoadingCircle = loadingCircle && loadingCircle->isVisible();
+			bool isGeodeListView = dynamic_cast<geode::ListView*>(this) != nullptr;
+
+			bool isBackgroundLayer = isListLayer && this->getID() == "background";
+
+			if (!isBackgroundLayer && (isValidCell || (isListLayer && (hasListView || hasVisibleLoadingCircle)) || isGeodeListView)) {
+
+				if (typeinfo_cast<DailyLevelNode*>(grandparent)) {
+					auto size = this->getContentSize();
+					this->setVisible(size.height == 90 && size.width == 160);
 				}
 
-				this->setColor(this->getColor() == ccColor3B{ 48, 48, 48 } ? ccColor3B{ 0, 0, 0 } : ccColor3B{ 255, 255, 255 });
-				this->setOpacity(10);
+				
+				if (currentColor == ccColor3B{ 230, 150, 10 }) {
+					this->setOpacity(10);
+				}
+				else if (currentColor == ccColor3B{ 48, 48, 48 }) {
+					this->setColor(ccColor3B{ 0, 0, 0 });
+					this->setOpacity(10);
+				}
+				else {
+					this->setColor(ccColor3B{ 255, 255, 255 });
+					this->setOpacity(10);
+				}
 			}
 		}
-
-
-
 
 
 		CCLayerColor::draw();
@@ -349,12 +376,6 @@ class $modify(DarkModeMenuLayer,MenuLayer)
 
 
 	void onDarkomodeButton(CCObject*) {
-
 		TexturePackSelector::create()->show();
-		/*auto awa = ;
-		awa->show();*/
-
-		/*geode::openModsList();*/
-
 	}
 };
