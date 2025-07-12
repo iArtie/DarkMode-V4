@@ -4,9 +4,6 @@
 #include <cocos2d.h>
 #include <Geode/ui/ScrollLayer.hpp>
 
-
-class PackNode;
-
 using namespace geode::prelude;
 
 class TexturePackSelector : public Popup<> {

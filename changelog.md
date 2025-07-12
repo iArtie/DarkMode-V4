@@ -1,5 +1,9 @@
 # DarkMode V4 Changelog
 
+## v2.0.1 (07-12-2025)
+- Removing some unnecessary things
+- Blue sprite color for level leaderboads added (for happy textures mod)
+
 ## v2.0.0 (07-08-2025)
 - Transparent lists option added!
 - TEXTURE PACK SELECTOR REWORKED!
