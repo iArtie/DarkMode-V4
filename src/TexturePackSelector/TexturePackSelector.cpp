@@ -472,9 +472,6 @@ void TexturePackSelector::reloadData()
                     else {
                         std::string installedVersion = Mod::get()->getSavedValue<std::string>(mode + "_installed_version");
 
-						std::cout << "Installed version for " << mode << ": " << installedVersion << std::endl;
-
-						std::cout << "Current version for " << mode << ": " << version << std::endl;
                         if (installedVersion.empty())
                         {
                             versions.push_back("v" + version);
