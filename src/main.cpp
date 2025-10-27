@@ -2,74 +2,38 @@
 #include <tuple>
 #include <Geode/Geode.hpp>
 #include <Geode/modify/MenuLayer.hpp>
-#include <Geode/modify/GJListLayer.hpp>
 #include <Geode/modify/CCScale9Sprite.hpp>
-#include <Geode/modify/CCSprite.hpp>
-#include <Geode/modify/CCLayerColor.hpp>
 #include <Geode/modify/MenuGameLayer.hpp>
-#include <Geode/modify/LevelSearchLayer.hpp>
-#include <Geode/modify/LevelSelectLayer.hpp>
-#include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/modify/AppDelegate.hpp>
+#include <Geode/modify/LevelInfoLayer.hpp>
+#include <Geode/modify/LevelSelectLayer.hpp>
+#include <Geode/modify/CCLayerColor.hpp>
+#include <Geode/modify/LevelSearchLayer.hpp>
+#include <Geode/modify/CCNode.hpp>
 #include <Geode/modify/AchievementNotifier.hpp>
 #include "TexturePackSelector/TexturePackSelector.hpp"
 #include "TexturePackSelector/TexturePackSelector.cpp"
+#include "extras/utils.hpp"
+
 
 using namespace geode::prelude;
 
-template<typename Base, typename T>
-inline bool instanceof(const T* ptr) {
-	return dynamic_cast<const Base*>(ptr) != nullptr;
-}
 
-
-
-struct ColorComparator {
-	bool operator()(const ccColor3B& lhs, const ccColor3B& rhs) const {
-		return std::tie(lhs.r, lhs.g, lhs.b) < std::tie(rhs.r, rhs.g, rhs.b);
-	}
-};
-
-void updateGroundColorM(CCSpriteBatchNode* batch, const cocos2d::ccColor3B& color)
-{
-	
+void updateGroundColorM(CCSpriteBatchNode* batch, const cocos2d::ccColor3B& color) {
 	if (!batch) return;
-	auto children = batch->getChildren();
-	if (!children) return;
 
-	for (int i = 0; i < children->count(); ++i) {
-		auto sprite = dynamic_cast<CCSprite*>(children->objectAtIndex(i));
-		if (!sprite) continue;
+	for (auto child : batch->getChildrenExt<CCNode>()) {
+		if (auto sprite = typeinfo_cast<CCSprite*>(child)) {
+			sprite->setColor(color);
 
-		sprite->setColor(color);
-
-		auto spriteChildren = sprite->getChildren();
-		if (!spriteChildren) continue;
-
-		for (int o = 0; o < spriteChildren->count(); ++o) {
-			auto spriteChild = dynamic_cast<CCSprite*>(spriteChildren->objectAtIndex(o));
-			if (!spriteChild) continue;
-
-			spriteChild->setColor(color);
+			for (auto spriteChild : sprite->getChildrenExt<CCNode>()) {
+				if (auto childSprite = typeinfo_cast<CCSprite*>(spriteChild)) {
+					childSprite->setColor(color);
+				}
+			}
 		}
 	}
 }
-
-class $modify(GJListLayer) {
-
-	static GJListLayer* create(BoomListView * p0, char const* p1, cocos2d::ccColor4B p2, float p3, float p4, int p5) {
-		auto ret = GJListLayer::create(p0, p1, p2, p3, p4, p5);
-
-		if (ret->getColor() == ccColor3B{191, 114, 62}) {
-			ret->setColor({ 31,31,31 });
-			
-		}
-
-		return ret;
-	}
-
-
-};
 
 void onSceneSwitch(CCScene * scene) {
 	if (scene)
@@ -122,8 +86,8 @@ class $modify(DMAchievementNotifier, AchievementNotifier) {
 	#endif
 };
 
-template <typename T>
-class GlobedListCell : public cocos2d::CCLayer, public T {}; //List cell recreate for globed cells
+
+class GlobedListCell : public cocos2d::CCLayer, public CCNode {}; //List cell recreate for globed cells
 
 
 class $modify(CCLayerColor)
@@ -132,9 +96,9 @@ class $modify(CCLayerColor)
 
 	void draw() //Idk why but init doesnt work
 	{
-//new code of something stuff
+		//new code of something stuff
 		static const std::map<ccColor3B, ccColor3B, ColorComparator> colorMap = {
-			
+
 			{{161, 88, 44}, {48, 48, 48}}, //For light brown cells
 			{{40, 53, 119}, {48, 48, 48}},
 			{{168, 85, 44}, {48, 48, 48}},
@@ -142,7 +106,7 @@ class $modify(CCLayerColor)
 			{{156, 85, 42}, {48, 48, 48}},
 			{{0, 0, 83}, {48, 48, 48}},
 
-			
+
 			{{194, 114, 62}, {30, 30, 30}}, //For dark brown cells
 			{{191, 114, 62}, {30, 30, 30}},
 			{{51, 68, 153}, {30, 30, 30}},
@@ -152,20 +116,15 @@ class $modify(CCLayerColor)
 			{{0, 13, 98}, {30, 30, 30}}
 		};
 
-		
+
 		auto it = colorMap.find(this->getColor());
-		if (it != colorMap.end()) {
+		auto parent = this->getParent();
+
+		if (it != colorMap.end())
 			this->setColor(it->second);
-		}
-	
-		// Option for transparent lists
-		if (Mod::get()->getSettingValue<bool>("transparent-lists") && this->getOpacity() != 10) {
-			auto parent = this->getParent();
-			auto grandparent = parent ? parent->getParent() : nullptr;
-			auto loadingCircle = parent ? parent->getChildByType<LoadingCircle*>(0) : nullptr;
 
-			auto currentColor = this->getColor();
-
+		if (Mod::get()->getSettingValue<bool>("transparent-lists") && this->getOpacity() != 10)
+		{
 			bool isValidCell =
 				typeinfo_cast<LevelCell*>(parent) ||
 				typeinfo_cast<GJScoreCell*>(parent) ||
@@ -173,39 +132,21 @@ class $modify(CCLayerColor)
 				typeinfo_cast<MapPackCell*>(parent) ||
 				dynamic_cast<geode::GenericListCell*>(parent) != nullptr;
 
-			// For yellow color in list
-			if (typeinfo_cast<GlobedListCell<cocos2d::CCNode>*>(parent) != nullptr &&
-				currentColor == ccColor3B{ 90, 90, 90 }) {
-				isValidCell = true;
-			}
-
 			bool isListLayer = typeinfo_cast<GJListLayer*>(this);
 			bool hasListView = this->getChildByID("list-view") != nullptr;
 
+			auto grandparent = parent ? parent->getParent() : nullptr;
+			auto loadingCircle = parent ? parent->getChildByType<LoadingCircle*>(0) : nullptr;
 			bool hasVisibleLoadingCircle = loadingCircle && loadingCircle->isVisible();
 			bool isGeodeListView = dynamic_cast<geode::ListView*>(this) != nullptr;
-
 			bool isBackgroundLayer = isListLayer && this->getID() == "background";
 
 			if (!isBackgroundLayer && (isValidCell || (isListLayer && (hasListView || hasVisibleLoadingCircle)) || isGeodeListView)) {
-
 				if (typeinfo_cast<DailyLevelNode*>(grandparent)) {
 					auto size = this->getContentSize();
 					this->setVisible(size.height == 90 && size.width == 160);
 				}
-
-				
-				if (currentColor == ccColor3B{ 230, 150, 10 }) {
-					this->setOpacity(10);
-				}
-				else if (currentColor == ccColor3B{ 48, 48, 48 }) {
-					this->setColor(ccColor3B{ 0, 0, 0 });
-					this->setOpacity(10);
-				}
-				else {
-					this->setColor(ccColor3B{ 255, 255, 255 });
-					this->setOpacity(10);
-				}
+				this->setOpacity(50);
 			}
 		}
 
@@ -214,24 +155,25 @@ class $modify(CCLayerColor)
 	}
 };
 
-
-class $modify(DMScale9Sprite, CCScale9Sprite)
+class $modify(CCScale9Sprite)
 {
 	void visit()
 	{
 		// new code of something stuff
 		static const std::map<ccColor3B, ccColor3B, ColorComparator> colorMap = {
 			{{0, 56, 141}, {20, 20, 20}},
-			{{130, 64, 33}, {20, 20, 20}},
-			{{0, 46, 117}, {20, 20, 20}},
-			{{0, 36, 91}, {20, 20, 20}},
-			{{0, 31, 79}, {20, 20, 20}},
-			{{123, 60, 31}, {15, 15, 15}},
-			{{108, 60, 36}, {15, 15, 15}},
-			{{0, 39, 98}, {10, 10, 10}},
-			{{76, 42, 25}, {25, 25, 25}},
-			{{130,64,32},{20,20,20}},
-			{{32,49,130},{20,20,20}}
+	        {{130, 64, 33}, {20, 20, 20}},
+	        {{0, 46, 117}, {20, 20, 20}},
+	        {{0, 36, 91}, {20, 20, 20}},
+	        {{0, 31, 79}, {20, 20, 20}},
+	        {{123, 60, 31}, {15, 15, 15}},
+	        {{108, 60, 36}, {15, 15, 15}},
+	        {{0, 39, 98}, {10, 10, 10}},
+	        {{76, 42, 25}, {25, 25, 25}},
+	        {{130, 64, 32}, {20, 20, 20}},
+	        {{32, 49, 130}, {20, 20, 20}},
+	        {{191, 114, 62}, {20, 20, 20}},
+	        {{176, 92, 52}, {20, 20, 20}}
 		};
 
 		auto it = colorMap.find(this->getColor());
@@ -239,113 +181,72 @@ class $modify(DMScale9Sprite, CCScale9Sprite)
 			this->setColor(it->second);
 		}
 
-		
+
 		CCScale9Sprite::visit();
 	}
 };
 
+class $modify(MenuGameLayer) {
+    void update(float dt) {
+        MenuGameLayer::update(dt);
 
-class $modify(MenuGameLayer)
-{
-	void update(float a1)
-	{
-		MenuGameLayer::update(a1);
+        for (auto child : this->getChildrenExt<CCNode>()) {
 
-		CCObject* pObj = nullptr;
+            if (auto sprite = typeinfo_cast<CCSprite*>(child)) {
+                if (sprite->getContentSize().height == 512.f) {
+                    sprite->setColor({40, 40, 40});
+                }
+            }
 
+            if (auto ground = typeinfo_cast<GJGroundLayer*>(child)) {
+                if (auto ground1 = typeinfo_cast<CCSpriteBatchNode*>(ground->getChildByID("ground-sprites")))
+                    updateGroundColorM(ground1, {40, 40, 40});
 
-		CCARRAY_FOREACH(((CCLayer*)(this))->getChildren(), pObj) {
-			CCSprite* currentSprite = (CCSprite*)pObj;
-
-			if (currentSprite->getContentSize().height == 512)
-			{
-				currentSprite->setColor({ 40,40,40 });
-			}
-
-			if (instanceof<GJGroundLayer>(pObj)) {
-
-				GJGroundLayer* ground = dynamic_cast<GJGroundLayer*>(pObj);
-
-				auto m_pGround01Sprite = static_cast<CCSpriteBatchNode*>(ground->getChildByID("ground-sprites"));
-				auto m_pGround02Sprite = static_cast<CCSpriteBatchNode*>(ground->getChildByID("ground-sprites-2"));
-
-
-				CCArray* children = nullptr;  
-
-				for (int i = 0; i < m_pGround01Sprite->getChildren()->count(); ++i) {
-					if (m_pGround01Sprite != nullptr) {
-						updateGroundColorM(m_pGround01Sprite, { 40,40,40 });
-					}
-					if (m_pGround02Sprite != nullptr) {
-						updateGroundColorM(m_pGround02Sprite, { 40,40,40 });
-					}
-				}
-				
-			}
-		}
-	}
+                if (auto ground2 = typeinfo_cast<CCSpriteBatchNode*>(ground->getChildByID("ground-sprites-2")))
+                    updateGroundColorM(ground2, {40, 40, 40});
+            }
+        }
+    }
 };
+
 class $modify(LevelInfoLayer)
 {
-	void onPlay(cocos2d::CCObject * sender)
-	{
+	void onPlay(cocos2d::CCObject * sender) {
 		LevelInfoLayer::onPlay(sender);
 
-		int counter = 0;
-		CCObject* pObj = nullptr;
-		auto PlayButton = (CCSprite*)this->m_playBtnMenu->getChildren()->objectAtIndex(0);
+		if (!m_playSprite) return;
+
+		for (int i = 0; i < 3; i++)
+			if (auto s = typeinfo_cast<CCSprite*>(m_playSprite->getChildByIndex(i)))
+				s->setColor(i == 2 ? ccColor3B{ 20, 20, 20 } : ccColor3B{ 0, 0, 0 });
+
+	}
+};
+
+class $modify(LevelSelectLayer) {
+	void scrollLayerMoved(CCPoint offset) {
+		LevelSelectLayer::scrollLayerMoved(offset);
+
 		
-		CCARRAY_FOREACH(((CCSprite*)(PlayButton->getChildren()->objectAtIndex(0)))->getChildren(), pObj) {
-			CCSprite* currentSprite = (CCSprite*)pObj;
+		for (auto child : this->getChildrenExt<CCNode>()) {
+		
+			if (auto groundLayer = typeinfo_cast<GJGroundLayer*>(child)) {
+
+				
+				auto ground1 = groundLayer->getChildByID("ground-sprites");
+				auto ground2 = groundLayer->getChildByID("ground-sprites-2");
 
 			
-			if (counter > 2)
-			{
-				currentSprite->setVisible(true);
+				if (auto batch1 = typeinfo_cast<CCSpriteBatchNode*>(ground1))
+					updateGroundColorM(batch1, { 40, 40, 40 });
+
+				if (auto batch2 = typeinfo_cast<CCSpriteBatchNode*>(ground2))
+					updateGroundColorM(batch2, { 40, 40, 40 });
 			}
-			else
-			{
-				currentSprite->setColor({ 0,0,0 });
-			}
-			counter++;
 		}
 	}
 };
 
-class $modify(LevelSelectLayer)
-{
-	void scrollLayerMoved(cocos2d::CCPoint a1)
-	{
-		LevelSelectLayer::scrollLayerMoved(a1);
-
-		CCObject* pObj = nullptr;
-
-		CCARRAY_FOREACH(this->getChildren(), pObj) {
-			CCNode* currentNode = (CCNode*)pObj;
-			
-			if (instanceof<GJGroundLayer>(pObj)) {
-				GJGroundLayer* groundLayer = (GJGroundLayer*)currentNode;
-				auto m_pGround01Sprite = static_cast<CCSpriteBatchNode*>(groundLayer->getChildByID("ground-sprites"));
-				auto m_pGround02Sprite = static_cast<CCSpriteBatchNode*>(groundLayer->getChildByID("ground-sprites-2"));
-
-
-				CCArray* children = nullptr;
-
-				for (int i = 0; i < m_pGround01Sprite->getChildren()->count(); ++i) {
-					if (m_pGround01Sprite != nullptr) {
-						updateGroundColorM(m_pGround01Sprite, { 40,40,40 });
-					}
-					if (m_pGround02Sprite != nullptr) {
-						updateGroundColorM(m_pGround02Sprite, { 40,40,40 });
-					}
-				}
-			}
-			
-		
-		}
-		
-	}
-};
 class $modify(LevelSearchLayer)
 {
 	bool init(int a1)
@@ -364,11 +265,18 @@ class $modify(DarkModeMenuLayer,MenuLayer)
 	{
 		if (!MenuLayer::init()) return false;
 
+	
+		if (Mod::get()->getSettingValue<bool>("Disable-Happy-Textures") != true) {
+			auto HT = Loader::get()->getLoadedMod("alphalaneous.happy_textures");
+			if (HT) { 
+				HT->setSettingValue<bool>("ccscale9sprite-fix", false);
+			}
+		}
+
 		auto darkmodeIcon = CCSprite::createWithSpriteFrameName("DMv4_Main_Btn.png"_spr);
 		
 		darkmodeIcon->setScale(1.1);
 		
-
 		auto myButton = CCMenuItemSpriteExtra::create(
 		darkmodeIcon,
 		this,

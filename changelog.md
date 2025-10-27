@@ -1,5 +1,11 @@
 # DarkMode V4 Changelog
 
+## v2.0.2 (10-27-2025)
+- Improve some code valitations
+- Code optimization
+- Happy Textures CCScale9Sprite fix setting disable by default
+- Added some colors for GDIntercept mod
+
 ## v2.0.1 (07-12-2025)
 - Removing some unnecessary things
 - Blue sprite color for level leaderboads added (for happy textures mod)
