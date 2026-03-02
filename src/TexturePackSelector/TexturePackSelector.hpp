@@ -73,7 +73,7 @@ protected:
     void handleDownloadResponse(web::WebResponse& res, const std::string& id);
     bool isValidZip(const std::string& path);
     std::string getHttpError(int code);
-
+    void migrateAndCleanSaves();
     void showLoadingCircle(bool show);
     void showProgressBar(bool show);
     void showNotification(const std::string& text, const std::string& sprite);

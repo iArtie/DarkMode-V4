@@ -45,6 +45,7 @@ std::string TexturePackSelector::getColoredText(const std::string& mode) {
 }
 
 void TexturePackSelector::loadCachedData() {
+    migrateAndCleanSaves();
     auto seen = Mod::get()->getSavedValue<std::vector<std::string>>("seen-packs");
     std::unordered_set<std::string> seenSet(seen.begin(), seen.end());
 
@@ -530,6 +531,43 @@ void TexturePackSelector::showProgressBar(bool show) {
         m_statusBG->setVisible(show);
     }
 }
+
+void TexturePackSelector::migrateAndCleanSaves() {
+    if (Mod::get()->getSavedValue<bool>("saves-migrated-v2")) return;
+
+    auto seen = Mod::get()->getSavedValue<std::vector<std::string>>("seen-packs");
+    std::vector<std::string> newSeen = seen;
+
+    for (const auto& mode : modes) {
+        std::string ver = Mod::get()->getSavedValue<std::string>(mode + "_version");
+        if (ver == "empty" || ver.empty()) {
+            Mod::get()->setSavedValue(mode + "_version", matjson::Value());
+            Mod::get()->setSavedValue(mode + "_link", matjson::Value());
+            Mod::get()->setSavedValue(mode + "_downloads", 0);
+            continue;
+        }
+
+        if (!Mod::get()->getSavedValue<std::string>(mode + "_installed_version").empty() &&
+            std::find(seen.begin(), seen.end(), mode) == seen.end()) {
+            newSeen.push_back(mode);
+        }
+    }
+
+    Mod::get()->setSavedValue("seen-packs", newSeen);
+    Mod::get()->setSavedValue("available-packs", [&] {
+        std::vector<std::string> avail;
+        for (const auto& mode : modes)
+            if (!Mod::get()->getSavedValue<std::string>(mode + "_version").empty())
+                avail.push_back(mode);
+        return avail;
+        }());
+
+    for (auto key : { "cached-json", "cached-counts", "known-variants", "shown-moved-alert" })
+        Mod::get()->setSavedValue(key, matjson::Value());
+
+    Mod::get()->setSavedValue("saves-migrated-v2", true);
+}
+
 
 void TexturePackSelector::showNotification(const std::string& text, const std::string& spriteFrame) {
     Notification::create(text, CCSprite::createWithSpriteFrameName(spriteFrame.c_str()))->show();
