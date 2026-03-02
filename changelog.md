@@ -1,5 +1,8 @@
 # DarkMode V4 Changelog
 
+## v2.0.4 (02-03-2026)
+- Fix crash when you go fast to different scenes
+
 ## v2.0.3 (02-03-2026)
 - Code optimization
 - Validations for downloads and internet connection

@@ -286,7 +286,7 @@ class $modify(DarkModeMenuLayer, MenuLayer) {
 
 			if(!Mod::get()->getSettingValue<bool>("Disable-updates-indicator"))
 			{
-				scheduleOnce(schedule_selector(DarkModeMenuLayer::checkUpdates), 0.5f);
+				scheduleOnce(schedule_selector(DarkModeMenuLayer::checkUpdates), 0.1f);
 			}
 			
 		}
@@ -298,8 +298,14 @@ class $modify(DarkModeMenuLayer, MenuLayer) {
 		if (m_fields->m_hasCheckedUpdates) return;
 		m_fields->m_hasCheckedUpdates = true;
 
-		TexturePackSelector::getPendingUpdates([this](int count) {
-			if (count > 0) updateMarker(count);
+		auto self = this;
+		this->retain();  
+
+		TexturePackSelector::getPendingUpdates([self](int count) {
+			if (count > 0)
+				self->updateMarker(count);
+
+			self->release();  
 			});
 	}
 
@@ -327,8 +333,9 @@ class $modify(DarkModeMenuLayer, MenuLayer) {
 		auto selector = TexturePackSelector::create();
 		if (!Mod::get()->getSettingValue<bool>("Disable-updates-indicator"))
 		{
-			selector->setUpdateCallback([this](int remaining) {
-				updateMarker(remaining);
+			selector->setUpdateCallback([self = Ref(this)](int remaining) {
+				if (self)
+					self->updateMarker(remaining);
 				});
 		}
 
