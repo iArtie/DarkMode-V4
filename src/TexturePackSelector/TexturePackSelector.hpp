@@ -1,5 +1,4 @@
 #pragma once
-#include <Geode/utils/Async.hpp>
 #include <Geode/DefaultInclude.hpp>
 #include <Geode/ui/Popup.hpp>
 #include <Geode/ui/ScrollLayer.hpp>
