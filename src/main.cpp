@@ -268,6 +268,10 @@ class $modify(DarkModeMenuLayer, MenuLayer) {
 	bool init() {
 		if (!MenuLayer::init()) return false;
 
+		if (!Mod::get()->getSavedValue<bool>("reset-saved-file"))
+		{
+			resetIfCachedJsonExists();
+		}
 		if (Mod::get()->getSettingValue<bool>("Disable-Happy-Textures") != true) {
 			if (auto HT = Loader::get()->getLoadedMod("alphalaneous.happy_textures"))
 				HT->setSettingValue<bool>("ccscale9sprite-fix", false);
@@ -321,6 +325,53 @@ class $modify(DarkModeMenuLayer, MenuLayer) {
 			marker->setID("update-marker");
 			m_fields->m_darkmodeButton->addChild(marker);
 		}
+	}
+
+	void resetIfCachedJsonExists() {
+		auto path = fmt::format("{}/saved.json", Mod::get()->getSaveDir());
+
+		if (!std::filesystem::exists(path)) return;
+
+		auto res = file::readString(path);
+		if (!res) return;
+
+		auto parsed = matjson::parse(res.unwrap());
+		if (!parsed) return;
+
+		auto json = parsed.unwrap();
+
+		if (!json.contains("cached-json")) return;
+
+		Notification::create(
+			"Resetting saved.json...",
+			CCSprite::createWithSpriteFrameName("GJ_timeIcon_001.png")
+		)->show();
+
+		auto writeRes = file::writeString(path, "{}");
+		if (!writeRes) {
+			return;
+		}
+		Notification::create("Successfully restored", CCSprite::createWithSpriteFrameName("GJ_completesIcon_001.png"))->show();
+		Mod::get()->setSavedValue<bool>("reset-saved-file", true);
+
+	
+		Loader::get()->queueInMainThread([] {
+			auto popup = createQuickPopup(
+				"New saves format",
+				"Save system updated. Restart required to avoid texture pack bugs.",
+				"No", "Restart",
+				[](auto, bool btn2) {
+					if (btn2) {
+						game::restart(false);
+					}
+				},
+				false,
+				false
+			);
+
+			popup->m_noElasticity = true;
+			popup->show();
+			});
 	}
 
 	void onDarkomodeButton(CCObject*) {
