@@ -1,5 +1,12 @@
 # DarkMode V4 Changelog
 
+## v2.0.3 (02-03-2026)
+- Code optimization
+- Validations for downloads and internet connection
+- Texture Packs update indicator!
+- New cells for socials added
+- New colors for popups by variant
+
 ## v2.0.2 (10-27-2025)
 - Improve some code valitations
 - Code optimization

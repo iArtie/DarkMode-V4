@@ -1,31 +1,29 @@
 {
-	"geode": "4.9.0",
+	"geode": "5.3.0",
 	"gd": {
-		"android": "2.2074",
-		"win": "2.2074",
-		"mac": "2.2074",
-		"ios": "2.2074"
+		"android": "2.2081",
+		"win": "2.2081",
+		"mac": "2.2081",
+		"ios": "2.2081"
 	},
-	"version": "v2.0.2",
+	"version": "v2.0.3",
 	"id": "bitz.darkmode_v4",
 	"name": "DarkMode V4",
 	"developers": [ "BitZ", "GhostPower13" ],
-	"dependencies": [
-		{
-			"id": "geode.node-ids",
-			"version": ">=v1.4.0",
-			"importance": "required"
-		},
-		{
-			"id": "geode.texture-loader",
-			"version": ">=v1.6.0",
-			"importance": "required"
-		}
-	],
+	"dependencies": {
+		"geode.node-ids": ">=v1.20.0",
+		"geode.texture-loader": ">=v1.8.0"
+	},
 	"settings": {
 		"Disable-selector-button": {
 			"name": "Disable selector button",
 			"description": "This hide the selector button from the menu",
+			"type": "bool",
+			"default": false
+		},
+		"Disable-updates-indicator": {
+			"name": "Disable updates indicator",
+			"description": "Removes the visual indicator shown when a texture pack has an available update.",
 			"type": "bool",
 			"default": false
 		},
@@ -53,7 +51,7 @@
 		},
 		"files": [
 			"resources/*.png",
-            "resources/*.fnt"
+			"resources/*.fnt"
 
 		]
 	},
@@ -62,6 +60,7 @@
 		"interface"
 	],
 	"links": {
+		"homepage": "https://bitzgd.github.io",
 		"source": "https://github.com/iArtie/DarkMode-V4",
 		"community": "https://discord.gg/gXg8w4xJDA"
 	},

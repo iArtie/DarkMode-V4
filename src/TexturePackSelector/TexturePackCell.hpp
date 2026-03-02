@@ -1,36 +1,35 @@
 #pragma once
-
 #include <Geode/Bindings.hpp>
-
 
 class TexturePackCell : public CCNode {
 public:
+    CCMenuItemSpriteExtra* button = nullptr;
 
-    CCMenuItemSpriteExtra* button;
     struct CreateArg {
-        cocos2d::CCSize size;
-        char const* iconFrame;
-        char const* titleFrame;
-        char const* version;
-		int downloadsCounter;
-        cocos2d::CCObject* target;
-        cocos2d::SEL_MenuHandler callback;
-		
+        CCSize size;
+        std::string_view iconFrame;
+        std::string_view titleFrame;
+        std::string_view version;
+        int downloadsCounter;
+        CCObject* target;
+        SEL_MenuHandler callback;
     };
-    CCScale9Sprite* cellBG = nullptr;
+
     static TexturePackCell* create(const CreateArg& arg);
 
 private:
     bool init(const CreateArg& arg);
 
-    cocos2d::CCNode* createIcon(char const* frame);
-    cocos2d::CCNode* createTitle(char const* frame);
+    CCNode* createIcon(std::string_view frame);
+    CCNode* createTitle(std::string_view frame);
+    CCNode* createVersion(std::string_view frame);
+    CCNode* createDownloadsCounter(int downloads);
+    CCNode* createViewButton(CCObject* target, SEL_MenuHandler callback);
+    void setupBackground(const std::string& version);
 
-    cocos2d::CCNode* createVersion(char const* frame);
-	cocos2d::CCNode* createDownLoadsCounter(int downloads);
-    cocos2d::CCNode* createViewButton(
-        cocos2d::CCObject* target,
-        cocos2d::SEL_MenuHandler callback
-    );
+    CCScale9Sprite* m_cellBG = nullptr;
+    float CELL_WIDTH = 395.f;
+    float CELL_HEIGHT = 70.f;
+    float ICON_SCALE = 0.925f;
+    float BUTTON_SCALE = 0.6f;
 };
-

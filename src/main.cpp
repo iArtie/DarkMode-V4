@@ -40,7 +40,7 @@ void onSceneSwitch(CCScene * scene) {
 	{
 		if (scene->getChildrenCount() > 0)
 		{
-			if (auto layer = as<CCLayer*>(scene->getChildren()->objectAtIndex(0)); layer->getChildrenCount() > 0)
+			if (auto layer = static_cast<CCLayer*>(scene->getChildren()->objectAtIndex(0)); layer->getChildrenCount() > 0)
 			{
 				if (scene->getChildByType<LevelEditorLayer>(0) || scene->getChildByType<LoadingLayer>(0))
 					return;
@@ -167,11 +167,12 @@ class $modify(CCScale9Sprite)
 	        {{0, 36, 91}, {20, 20, 20}},
 	        {{0, 31, 79}, {20, 20, 20}},
 	        {{123, 60, 31}, {15, 15, 15}},
+			{{93, 52, 31}, {20, 20, 20}},
 	        {{108, 60, 36}, {15, 15, 15}},
 	        {{0, 39, 98}, {10, 10, 10}},
 	        {{76, 42, 25}, {25, 25, 25}},
 	        {{130, 64, 32}, {20, 20, 20}},
-	        {{32, 49, 130}, {20, 20, 20}},
+	        {{32, 49, 130}, {15, 15, 15}},
 	        {{191, 114, 62}, {20, 20, 20}},
 	        {{176, 92, 52}, {20, 20, 20}}
 		};
@@ -258,50 +259,79 @@ class $modify(LevelSearchLayer)
 	}
 };
 
-class $modify(DarkModeMenuLayer,MenuLayer)
-{
+class $modify(DarkModeMenuLayer, MenuLayer) {
+	struct Fields {
+		CCSprite* m_darkmodeButton = nullptr;
+		bool m_hasCheckedUpdates = false;
+	};
 
-	bool init()
-	{
+	bool init() {
 		if (!MenuLayer::init()) return false;
 
-	
 		if (Mod::get()->getSettingValue<bool>("Disable-Happy-Textures") != true) {
-			auto HT = Loader::get()->getLoadedMod("alphalaneous.happy_textures");
-			if (HT) { 
+			if (auto HT = Loader::get()->getLoadedMod("alphalaneous.happy_textures"))
 				HT->setSettingValue<bool>("ccscale9sprite-fix", false);
-			}
 		}
 
-		auto darkmodeIcon = CCSprite::createWithSpriteFrameName("DMv4_Main_Btn.png"_spr);
-		
-		darkmodeIcon->setScale(1.1);
-		
-		auto myButton = CCMenuItemSpriteExtra::create(
-		darkmodeIcon,
-		this,
-		menu_selector(DarkModeMenuLayer::onDarkomodeButton)
-		);
+		if (!Mod::get()->getSettingValue<bool>("Disable-selector-button")) {
+			auto menu = getChildByID("bottom-menu");
+			auto darkmodeIcon = CCSprite::createWithSpriteFrameName("DMv4_Main_Btn.png"_spr);
+			darkmodeIcon->setScale(1.1f);
 
-		
-		auto menu = this->getChildByID("bottom-menu");
-
-		if (Mod::get()->getSettingValue<bool>("Disable-selector-button") == false)
-		{
-			menu->addChild(myButton);
-
+			auto myButton = CCMenuItemSpriteExtra::create(darkmodeIcon, this, menu_selector(DarkModeMenuLayer::onDarkomodeButton));
 			myButton->setID("TexturePackSelector"_spr);
-
+			menu->addChild(myButton);
+			m_fields->m_darkmodeButton = darkmodeIcon;
 			menu->updateLayout();
+
+			if(!Mod::get()->getSettingValue<bool>("Disable-updates-indicator"))
+			{
+				scheduleOnce(schedule_selector(DarkModeMenuLayer::checkUpdates), 0.5f);
+			}
+			
 		}
-	
-	
-	
+
 		return true;
 	}
 
+	void checkUpdates(float) {
+		if (m_fields->m_hasCheckedUpdates) return;
+		m_fields->m_hasCheckedUpdates = true;
+
+		TexturePackSelector::getPendingUpdates([this](int count) {
+			if (count > 0) updateMarker(count);
+			});
+	}
+
+	void updateMarker(int count) {
+		if (!m_fields->m_darkmodeButton) return;
+
+		m_fields->m_darkmodeButton->removeChildByID("update-marker");
+
+		if (count > 0) {
+			auto marker = CCSprite::createWithSpriteFrameName("geode.loader/updates-available.png");
+			marker->setScale(0.65f);
+
+			auto label = CCLabelBMFont::create(fmt::format("{}", count).c_str(), "bigFont.fnt");
+			label->setScale(0.5f);
+			marker->addChildAtPosition(label, Anchor::Center);
+
+			auto size = m_fields->m_darkmodeButton->getContentSize();
+			marker->setPosition({ size.width - 5, size.height - 5 });
+			marker->setID("update-marker");
+			m_fields->m_darkmodeButton->addChild(marker);
+		}
+	}
 
 	void onDarkomodeButton(CCObject*) {
-		TexturePackSelector::create()->show();
+		auto selector = TexturePackSelector::create();
+		if (!Mod::get()->getSettingValue<bool>("Disable-updates-indicator"))
+		{
+			selector->setUpdateCallback([this](int remaining) {
+				updateMarker(remaining);
+				});
+		}
+
+		selector->show();
 	}
 };
