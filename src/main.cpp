@@ -248,17 +248,6 @@ class $modify(LevelSelectLayer) {
 	}
 };
 
-class $modify(LevelSearchLayer)
-{
-	bool init(int a1)
-	{
-		if (!LevelSearchLayer::init(a1)) return false;
-
-		this->m_searchInput->setLabelNormalColor({ 255,255,255 });
-		return true;
-	}
-};
-
 class $modify(DarkModeMenuLayer, MenuLayer) {
 	struct Fields {
 		CCSprite* m_darkmodeButton = nullptr;
